@@ -142,13 +142,14 @@ function detectRecurring(transactions) {
 
   for (const tx of transactions) {
     if (tx.transactionClass === TX_CLASS.SAVINGS) continue
+    if (tx.category === CATEGORY.TIKKIES) continue  // Tikkies are always one-off
     const key = tx.year + '|' + tx.transactionClass + '|' + normaliseKey(tx.name)
     if (!monthSets.has(key)) monthSets.set(key, new Set())
     monthSets.get(key).add(tx.month)
   }
 
   for (const tx of transactions) {
-    if (tx.transactionClass === TX_CLASS.SAVINGS) {
+    if (tx.transactionClass === TX_CLASS.SAVINGS || tx.category === CATEGORY.TIKKIES) {
       tx.isRecurring = false
       tx.recurringKey = ''
       continue
@@ -193,22 +194,19 @@ function buildOneMonth(txs, year, month) {
   const expenses = txs.filter(t => t.transactionClass === TX_CLASS.EXPENSE)
 
   // Income split: recurring (structural) vs one-off
-  const structuralIncome = income.filter(t => t.isRecurring)
-  const oneOffIncome     = income.filter(t => !t.isRecurring)
+  const recurringIncome = income.filter(t => t.isRecurring)
+  const oneOffIncome    = income.filter(t => !t.isRecurring)
 
   // Expenses split: recurring vs one-off
   const recurring = expenses.filter(t => t.isRecurring)
   const oneOff    = expenses.filter(t => !t.isRecurring).sort((a, b) => b.amount - a.amount)
-
-  const salary   = income.filter(t => t.category === CATEGORY.SALARIS)
-  const otherInc = income.filter(t => t.category !== CATEGORY.SALARIS)
 
   // Savings split: regular savings vs extra mortgage repayments
   const regularSavingsOut = savings.filter(t => t.category === CATEGORY.SPAREN && t.direction === 'debit')
   const repayments        = savings.filter(t => t.category === CATEGORY.AFLOSSING)
 
   const totalIncome          = sumAmounts(income)
-  const totalStructuralIncome = sumAmounts(structuralIncome)
+  const totalStructuralIncome = sumAmounts(recurringIncome)
   const totalOneOffIncome    = sumAmounts(oneOffIncome)
   const totalExpenses        = sumAmounts(expenses)
   const totalRecurring       = sumAmounts(recurring)
@@ -229,8 +227,8 @@ function buildOneMonth(txs, year, month) {
     totalSavings,
     totalRepayments,
     netBalance: totalIncome - totalExpenses,
-    salaryTransactions: salary,
-    otherIncome:        otherInc,
+    recurringIncome,
+    oneOffIncome,
     recurringExpenses:  groupByCategory(recurring),
     oneOffExpenses:     oneOff,
     savingsTransfers:   savings,
