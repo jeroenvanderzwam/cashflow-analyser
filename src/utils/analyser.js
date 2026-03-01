@@ -52,7 +52,7 @@ const CATEGORY_RULES = [
    CATEGORY.SPAREN, TX_CLASS.SAVINGS],
   [/flatex bank|beleggingsrek/i,
    CATEGORY.INVESTEREN, TX_CLASS.SAVINGS],
-  [/dg groep bv/i,
+  [/dg groep bv|geoict/i,
    CATEGORY.SALARIS, TX_CLASS.INCOME],
   [/via tikkie|via rabo betaalverzoek|via asn bank betaalverzoek|aab inz tikkie/i,
    CATEGORY.TIKKIES, TX_CLASS.EXPENSE],
@@ -232,8 +232,8 @@ function buildOneMonth(txs, year, month) {
   const savings  = txs.filter(t => t.transactionClass === TX_CLASS.SAVINGS)
   const expenses = txs.filter(t => t.transactionClass === TX_CLASS.EXPENSE)
 
-  const recurringIncome = income.filter(t => t.isRecurring)
-  const oneOffIncome    = income.filter(t => !t.isRecurring)
+  const recurringIncome = income.filter(t => t.category === CATEGORY.SALARIS)
+  const oneOffIncome    = income.filter(t => t.category !== CATEGORY.SALARIS)
 
   const vast     = expenses.filter(t => t.expenseType === EXPENSE_TYPE.VAST)
   const variabel = expenses.filter(t => t.expenseType === EXPENSE_TYPE.VARIABEL)
