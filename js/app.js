@@ -8,40 +8,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
   fileInput.addEventListener('change', handleFilesChanged);
 
+  // Auto-load default data if available (js/default-data.js defines DEFAULT_CSV)
+  if (typeof DEFAULT_CSV !== 'undefined') {
+    loadFromTexts([DEFAULT_CSV]);
+  }
+
   function handleFilesChanged(event) {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
 
     errorBanner.hidden = true;
 
-    // Read all files in parallel, then analyse together
-    const readers = files.map(file => readFileAsText(file));
-
-    Promise.all(readers)
-      .then(csvTexts => {
-        // Parse each CSV, merge all transactions
-        const allTransactions = [];
-        csvTexts.forEach((text, i) => {
-          try {
-            const txs = parseCSV(text);
-            allTransactions.push(...txs);
-          } catch (err) {
-            throw new Error(`Fout in bestand "${files[i].name}": ${err.message}`);
-          }
-        });
-
-        if (allTransactions.length === 0) {
-          throw new Error('Geen transacties gevonden in de geselecteerde bestanden.');
-        }
-
-        const yearlyOverviews = analyse(allTransactions);
-        renderApp(yearlyOverviews);
-      })
+    Promise.all(files.map(readFileAsText))
+      .then(csvTexts => loadFromTexts(csvTexts, files.map(f => f.name)))
       .catch(err => {
         errorBanner.textContent = err.message;
         errorBanner.hidden = false;
         console.error(err);
       });
+  }
+
+  function loadFromTexts(csvTexts, fileNames) {
+    const allTransactions = [];
+    csvTexts.forEach((text, i) => {
+      try {
+        allTransactions.push(...parseCSV(text));
+      } catch (err) {
+        const name = fileNames ? fileNames[i] : 'standaard data';
+        throw new Error(`Fout in "${name}": ${err.message}`);
+      }
+    });
+
+    if (allTransactions.length === 0) {
+      throw new Error('Geen transacties gevonden in de geselecteerde bestanden.');
+    }
+
+    renderApp(analyse(allTransactions));
   }
 
   /**

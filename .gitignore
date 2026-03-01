@@ -1,5 +1,6 @@
 # Personal financial data — never commit
 data/
+js/default-data.js
 
 # OS / editor
 .DS_Store
