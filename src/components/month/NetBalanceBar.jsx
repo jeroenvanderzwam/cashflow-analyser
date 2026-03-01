@@ -1,7 +1,7 @@
 import { fmt } from '../../utils/fmt'
 
 export default function NetBalanceBar({ monthly }) {
-  const net = monthly.netBalance
+  const net  = monthly.netBalance
   const cls  = net >= 0 ? 'positive' : 'negative'
   const sign = net >= 0 ? '+' : ''
 
@@ -12,7 +12,6 @@ export default function NetBalanceBar({ monthly }) {
       <span className="net-detail">
         {fmt(monthly.totalIncome)} inkomsten
         {' \u2212 '}{fmt(monthly.totalExpenses)} uitgaven
-        {' \u2212 '}{fmt(monthly.totalSavings)} sparen
       </span>
     </div>
   )

@@ -23,11 +23,20 @@ export default function MultiYearChart({ overviews, onYearClick }) {
     labels,
     datasets: [
       {
-        label: 'Inkomsten',
-        data: overviews.map(o => o.totalIncome),
-        backgroundColor: 'rgba(34,197,94,0.8)',
-        borderColor:     'rgba(34,197,94,1)',
+        label: 'Structureel inkomen',
+        data: overviews.map(o => o.totalStructuralIncome),
+        backgroundColor: 'rgba(22,163,74,0.85)',
+        borderColor:     'rgba(22,163,74,1)',
         borderWidth: 1,
+        stack: 'income',
+      },
+      {
+        label: 'Eenmalig inkomen',
+        data: overviews.map(o => o.totalOneOffIncome),
+        backgroundColor: 'rgba(134,239,172,0.85)',
+        borderColor:     'rgba(134,239,172,1)',
+        borderWidth: 1,
+        stack: 'income',
       },
       {
         label: 'Uitgaven',
@@ -41,6 +50,13 @@ export default function MultiYearChart({ overviews, onYearClick }) {
         data: overviews.map(o => o.totalSavings),
         backgroundColor: 'rgba(59,130,246,0.8)',
         borderColor:     'rgba(59,130,246,1)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Extra aflossing',
+        data: overviews.map(o => o.totalRepayments),
+        backgroundColor: 'rgba(139,92,246,0.8)',
+        borderColor:     'rgba(139,92,246,1)',
         borderWidth: 1,
       },
       netLineDataset(overviews.map(o => o.netBalance)),
