@@ -11,12 +11,12 @@ export default function YearDetail({ yearly, threshold, onThresholdChange }) {
     <>
       <ThresholdBar threshold={threshold} onChange={onThresholdChange} />
       <div className="card-grid" id="card-grid">
-        <SpecialExpensesCard monthly={yearly} threshold={threshold} />
         <IncomeCard monthly={yearly} />
         <RecurringExpensesCard monthly={yearly} />
         <VariableExpensesCard monthly={yearly} />
         <OneOffExpensesCard monthly={yearly} threshold={threshold} />
         <SavingsCard monthly={yearly} />
+        <SpecialExpensesCard monthly={yearly} threshold={threshold} />
       </div>
     </>
   )
