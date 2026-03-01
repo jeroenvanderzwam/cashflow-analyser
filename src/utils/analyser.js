@@ -23,63 +23,52 @@ export const CATEGORY = Object.freeze({
   OVERIG:          'Overig',
 })
 
+export const EXPENSE_TYPE = Object.freeze({
+  VAST:     'vast',
+  VARIABEL: 'variabel',
+  EENMALIG: 'eenmalig',
+})
+
 const TX_CLASS = Object.freeze({
   INCOME:  'income',
   EXPENSE: 'expense',
   SAVINGS: 'savings',
 })
 
-/**
- * Categorisation rules — evaluated top-to-bottom, first match wins.
- * Each entry: [regex, category, transactionClass]
- * Tested against: tx.nameLower + ' ' + tx.description.toLowerCase()
- */
+// Categories that are fixed by nature — regardless of CV
+const ALWAYS_VAST = new Set([
+  CATEGORY.ENERGIE, CATEGORY.ZORGVERZEKERING, CATEGORY.VERZEKERING,
+  CATEGORY.BANK_ABO, CATEGORY.WONEN, CATEGORY.LIDMAATSCHAPPEN,
+])
+
+// Categories that are variable by nature — regardless of CV
+const ALWAYS_VARIABEL = new Set([
+  CATEGORY.BOODSCHAPPEN, CATEGORY.HORECA,
+])
+
 const CATEGORY_RULES = [
-  // --- SAVINGS (catches both debit and credit directions) ---
   [/spaardoel|oranje spaarrekening|flatex bank|toprekening/i,
    CATEGORY.SPAREN, TX_CLASS.SAVINGS],
-
-  // --- INCOME: salary from employer ---
   [/dg groep bv/i,
    CATEGORY.SALARIS, TX_CLASS.INCOME],
-
-  // --- TIKKIES: direction override applied in categorise() ---
   [/via tikkie|via rabo betaalverzoek|via asn bank betaalverzoek|aab inz tikkie/i,
    CATEGORY.TIKKIES, TX_CLASS.EXPENSE],
-
-  // --- BOODSCHAPPEN ---
   [/albert heijn|ah to go|bck\*.*ah|lidl|jumbo|plus gils|plus markt|aldi|hoogvliet|bakker bart|dirk van den broek|spar |zwerwers|ekoplaza|biologisch/i,
    CATEGORY.BOODSCHAPPEN, TX_CLASS.EXPENSE],
-
-  // --- ENERGIE & WATER ---
   [/greenchoice|vattenfall|eneco|nuon|vitens|dunea|oxxio/i,
    CATEGORY.ENERGIE, TX_CLASS.EXPENSE],
-
-  // --- ZORGVERZEKERING ---
   [/zilveren kruis|cz groep|czgroep|menzis|vgz|ditzo|zorgverzeker/i,
    CATEGORY.ZORGVERZEKERING, TX_CLASS.EXPENSE],
-
-  // --- VERZEKERING (niet zorg) ---
   [/nn schadeverzekering|centraal beheer|fbto|ing verzekeren|reaal|univé|nationale.nederlanden/i,
    CATEGORY.VERZEKERING, TX_CLASS.EXPENSE],
-
-  // --- WONEN (hypotheek, VvE, huur) ---
   [/ing hypotheken|hypotheek|vve |huurpenning|woningcorporati/i,
    CATEGORY.WONEN, TX_CLASS.EXPENSE],
-
-  // --- BANK & ABONNEMENTEN ---
   [/kosten oranjepakket|ing bank|kpn|t-mobile|vodafone libertel|vodafone|ziggo|netflix|spotify|strato|online\.nl|xs4all|tele2|sim only/i,
    CATEGORY.BANK_ABO, TX_CLASS.EXPENSE],
-
-  // --- VERVOER ---
   [/ns groep|ov-chipkaart|translink|shell |bp |total |tamoil|tinq|gulf|esso |brandstof|parkeer|q-park|yellowbrick|msp parking/i,
    CATEGORY.VERVOER, TX_CLASS.EXPENSE],
-
-  // --- LIDMAATSCHAPPEN ---
   [/n\.v\.v\.|natuurmonumenten|stichting vrijdag|vrijdag|vereniging eigen huis|museumkaart|greenpeace|amnesty|wwf |anwb /i,
    CATEGORY.LIDMAATSCHAPPEN, TX_CLASS.EXPENSE],
-
-  // --- HORECA (restaurants, cafés, bars, delivery) ---
   [/ccv\*|zettle\*|square \*|restaurant|brasserie|bistro|pannekoek|pizzeria|sushi|kebab|wereldburger|cafetaria|snackbar|takeaway|deliveroo|thuisbezorgd|uber eats|domino|new york pizza/i,
    CATEGORY.HORECA, TX_CLASS.EXPENSE],
 ]
@@ -95,15 +84,12 @@ function categorise(tx) {
     if (regex.test(target)) {
       tx.category = category
 
-      // Special case: Tikkie credit (AAB INZ TIKKIE) = incoming reimbursement
       if (category === CATEGORY.TIKKIES && tx.direction === 'credit') {
         tx.transactionClass = TX_CLASS.INCOME
       } else {
         tx.transactionClass = txClass
       }
 
-      // Extra mortgage repayments (manual transfers, not monthly direct debits) → aflossing
-      // Regular monthly payments come in as Incasso; extra repayments as Online bankieren/Verzamelbetaling
       if (category === CATEGORY.WONEN &&
           /hypotheek|ing hypotheken/i.test(target) &&
           tx.mutationType !== 'Incasso') {
@@ -115,7 +101,6 @@ function categorise(tx) {
     }
   }
 
-  // Fallback
   tx.category = CATEGORY.OVERIG
   tx.transactionClass = tx.direction === 'credit' ? TX_CLASS.INCOME : TX_CLASS.EXPENSE
 }
@@ -136,13 +121,11 @@ function normaliseKey(name) {
 }
 
 function detectRecurring(transactions) {
-  // Map: "2025|income|albert heijn" → Set of month numbers
-  // Include transactionClass in key so income and expense recurring are tracked separately
   const monthSets = new Map()
 
   for (const tx of transactions) {
     if (tx.transactionClass === TX_CLASS.SAVINGS) continue
-    if (tx.category === CATEGORY.TIKKIES) continue  // Tikkies are always one-off
+    if (tx.category === CATEGORY.TIKKIES) continue
     const key = tx.year + '|' + tx.transactionClass + '|' + normaliseKey(tx.name)
     if (!monthSets.has(key)) monthSets.set(key, new Set())
     monthSets.get(key).add(tx.month)
@@ -157,6 +140,59 @@ function detectRecurring(transactions) {
     const key = tx.year + '|' + tx.transactionClass + '|' + normaliseKey(tx.name)
     tx.recurringKey = normaliseKey(tx.name)
     tx.isRecurring = (monthSets.get(key)?.size ?? 0) >= 3
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Expense type assignment (vast / variabel / eenmalig)
+// Uses category overrides first, then coefficient of variation for ambiguous cases
+// ---------------------------------------------------------------------------
+
+function assignExpenseTypes(transactions) {
+  const expenses = transactions.filter(t => t.transactionClass === TX_CLASS.EXPENSE)
+
+  // Build monthly totals per merchant group to calculate CV
+  // key: "year|recurringKey" → Map<month, totalAmount>
+  const monthlyTotals = new Map()
+  for (const tx of expenses) {
+    if (!tx.isRecurring) continue
+    const key = tx.year + '|' + tx.recurringKey
+    if (!monthlyTotals.has(key)) monthlyTotals.set(key, new Map())
+    const m = monthlyTotals.get(key)
+    m.set(tx.month, (m.get(tx.month) || 0) + tx.amount)
+  }
+
+  // Calculate coefficient of variation (stddev / mean) per group
+  const cvMap = new Map()
+  for (const [key, monthMap] of monthlyTotals) {
+    const amounts = Array.from(monthMap.values())
+    if (amounts.length < 2) { cvMap.set(key, 1); continue }
+    const mean   = amounts.reduce((s, v) => s + v, 0) / amounts.length
+    const stddev = Math.sqrt(amounts.reduce((s, v) => s + (v - mean) ** 2, 0) / amounts.length)
+    cvMap.set(key, mean > 0 ? stddev / mean : 1)
+  }
+
+  for (const tx of expenses) {
+    if (!tx.isRecurring) {
+      tx.expenseType = EXPENSE_TYPE.EENMALIG
+      continue
+    }
+    if (ALWAYS_VAST.has(tx.category)) {
+      tx.expenseType = EXPENSE_TYPE.VAST
+      continue
+    }
+    if (ALWAYS_VARIABEL.has(tx.category)) {
+      tx.expenseType = EXPENSE_TYPE.VARIABEL
+      continue
+    }
+    // Ambiguous category: use CV (threshold 0.2)
+    const cv = cvMap.get(tx.year + '|' + tx.recurringKey) ?? 1
+    tx.expenseType = cv < 0.2 ? EXPENSE_TYPE.VAST : EXPENSE_TYPE.VARIABEL
+  }
+
+  // Non-expenses have no expenseType
+  for (const tx of transactions) {
+    if (tx.transactionClass !== TX_CLASS.EXPENSE) tx.expenseType = null
   }
 }
 
@@ -193,26 +229,26 @@ function buildOneMonth(txs, year, month) {
   const savings  = txs.filter(t => t.transactionClass === TX_CLASS.SAVINGS)
   const expenses = txs.filter(t => t.transactionClass === TX_CLASS.EXPENSE)
 
-  // Income split: recurring (structural) vs one-off
   const recurringIncome = income.filter(t => t.isRecurring)
   const oneOffIncome    = income.filter(t => !t.isRecurring)
 
-  // Expenses split: recurring vs one-off
-  const recurring = expenses.filter(t => t.isRecurring)
-  const oneOff    = expenses.filter(t => !t.isRecurring).sort((a, b) => b.amount - a.amount)
+  const vast     = expenses.filter(t => t.expenseType === EXPENSE_TYPE.VAST)
+  const variabel = expenses.filter(t => t.expenseType === EXPENSE_TYPE.VARIABEL)
+  const eenmalig = expenses.filter(t => t.expenseType === EXPENSE_TYPE.EENMALIG)
+    .sort((a, b) => b.amount - a.amount)
 
-  // Savings split: regular savings vs extra mortgage repayments
   const regularSavingsOut = savings.filter(t => t.category === CATEGORY.SPAREN && t.direction === 'debit')
   const repayments        = savings.filter(t => t.category === CATEGORY.AFLOSSING)
 
-  const totalIncome          = sumAmounts(income)
+  const totalIncome           = sumAmounts(income)
   const totalStructuralIncome = sumAmounts(recurringIncome)
-  const totalOneOffIncome    = sumAmounts(oneOffIncome)
-  const totalExpenses        = sumAmounts(expenses)
-  const totalRecurring       = sumAmounts(recurring)
-  const totalOneOff          = sumAmounts(oneOff)
-  const totalSavings         = sumAmounts(regularSavingsOut)
-  const totalRepayments      = sumAmounts(repayments)
+  const totalOneOffIncome     = sumAmounts(oneOffIncome)
+  const totalExpenses         = sumAmounts(expenses)
+  const totalVast             = sumAmounts(vast)
+  const totalVariabel         = sumAmounts(variabel)
+  const totalOneOff           = sumAmounts(eenmalig)
+  const totalSavings          = sumAmounts(regularSavingsOut)
+  const totalRepayments       = sumAmounts(repayments)
 
   return {
     year,
@@ -222,25 +258,26 @@ function buildOneMonth(txs, year, month) {
     totalStructuralIncome,
     totalOneOffIncome,
     totalExpenses,
-    totalRecurring,
+    totalVast,
+    totalVariabel,
     totalOneOff,
     totalSavings,
     totalRepayments,
     netBalance: totalIncome - totalExpenses,
     recurringIncome,
     oneOffIncome,
-    recurringExpenses:  groupByCategory(recurring),
-    oneOffExpenses:     oneOff,
-    savingsTransfers:   savings,
+    vastExpenses:     groupByCategory(vast),
+    variabelExpenses: groupByCategory(variabel),
+    oneOffExpenses:   eenmalig,
+    savingsTransfers: savings,
   }
 }
 
 function buildMonthlyOverviews(txs, year) {
   const months = [...new Set(txs.map(t => t.month))].sort((a, b) => a - b)
-  return months.map(month => {
-    const monthTxs = txs.filter(t => t.month === month)
-    return buildOneMonth(monthTxs, year, month)
-  })
+  return months.map(month =>
+    buildOneMonth(txs.filter(t => t.month === month), year, month)
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -250,6 +287,7 @@ function buildMonthlyOverviews(txs, year) {
 export function analyse(transactions) {
   transactions.forEach(categorise)
   detectRecurring(transactions)
+  assignExpenseTypes(transactions)
 
   const years = [...new Set(transactions.map(t => t.year))].sort((a, b) => a - b)
 
@@ -261,7 +299,8 @@ export function analyse(transactions) {
     const totalStructuralIncome = months.reduce((s, m) => s + m.totalStructuralIncome, 0)
     const totalOneOffIncome     = months.reduce((s, m) => s + m.totalOneOffIncome, 0)
     const totalExpenses         = months.reduce((s, m) => s + m.totalExpenses, 0)
-    const totalRecurring        = months.reduce((s, m) => s + m.totalRecurring, 0)
+    const totalVast             = months.reduce((s, m) => s + m.totalVast, 0)
+    const totalVariabel         = months.reduce((s, m) => s + m.totalVariabel, 0)
     const totalOneOff           = months.reduce((s, m) => s + m.totalOneOff, 0)
     const totalSavings          = months.reduce((s, m) => s + m.totalSavings, 0)
     const totalRepayments       = months.reduce((s, m) => s + m.totalRepayments, 0)
@@ -272,7 +311,8 @@ export function analyse(transactions) {
       totalStructuralIncome,
       totalOneOffIncome,
       totalExpenses,
-      totalRecurring,
+      totalVast,
+      totalVariabel,
       totalOneOff,
       totalSavings,
       totalRepayments,

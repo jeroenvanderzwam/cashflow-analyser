@@ -78,6 +78,7 @@ export function parseCSV(csvText) {
       transactionClass: null,
       isRecurring:    false,
       recurringKey:   '',
+      expenseType:    null,  // 'vast' | 'variabel' | 'eenmalig' | null
     })
   })
 

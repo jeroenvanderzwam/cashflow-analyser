@@ -3,8 +3,8 @@ import Card from './Card'
 import TransactionRow from './TransactionRow'
 import { fmt } from '../../../utils/fmt'
 
-export default function RecurringExpensesCard({ monthly }) {
-  const { vastExpenses, totalVast } = monthly
+export default function VariableExpensesCard({ monthly }) {
+  const { variabelExpenses, totalVariabel } = monthly
   const [openCategories, setOpenCategories] = useState(new Set())
 
   function toggle(category) {
@@ -17,10 +17,10 @@ export default function RecurringExpensesCard({ monthly }) {
   }
 
   return (
-    <Card title="Vaste lasten" total={fmt(totalVast)} totalClass="debit">
-      {vastExpenses.length === 0
-        ? <p className="empty-state">Geen vaste lasten herkend</p>
-        : vastExpenses.map(breakdown => {
+    <Card title="Variabele uitgaven" total={fmt(totalVariabel)} totalClass="debit">
+      {variabelExpenses.length === 0
+        ? <p className="empty-state">Geen variabele uitgaven</p>
+        : variabelExpenses.map(breakdown => {
             const isOpen = openCategories.has(breakdown.category)
             return (
               <div key={breakdown.category} className="category-section">
