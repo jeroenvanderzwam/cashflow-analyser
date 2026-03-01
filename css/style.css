@@ -130,6 +130,70 @@ body {
   margin-bottom: 0.5rem;
 }
 
+.chart-group-toggles {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.chart-toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.chart-group-btn {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 2px solid var(--group-color);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, opacity 0.15s;
+}
+
+.chart-group-btn.all {
+  background: var(--group-color);
+  color: #fff;
+}
+
+.chart-group-btn.partial {
+  background: var(--group-color);
+  color: #fff;
+  opacity: 0.55;
+}
+
+.chart-group-btn.off {
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+.chart-dataset-pills {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.chart-dataset-pill {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.chart-dataset-pill.active {
+  border-color: var(--group-color);
+  color: var(--color-text);
+}
+
 .chart-hint {
   text-align: center;
   color: var(--color-text-muted);
