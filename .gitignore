@@ -5,3 +5,7 @@ data/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Node / Vite
+node_modules/
+dist/

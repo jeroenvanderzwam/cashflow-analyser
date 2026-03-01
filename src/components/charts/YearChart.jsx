@@ -1,0 +1,82 @@
+import { Bar } from 'react-chartjs-2'
+import { fmt } from '../../utils/fmt'
+import { MONTH_NAMES } from '../../utils/analyser'
+
+function netLineDataset(data) {
+  return {
+    type: 'line',
+    label: 'Netto',
+    data,
+    borderColor:     'rgba(234,179,8,1)',
+    backgroundColor: 'rgba(234,179,8,0.08)',
+    borderWidth: 2,
+    pointRadius: 4,
+    pointHoverRadius: 6,
+    tension: 0.3,
+    yAxisID: 'y',
+  }
+}
+
+export default function YearChart({ yearly, onMonthClick, compact }) {
+  const months = yearly.months
+  const labels = months.map(m => MONTH_NAMES[m.month - 1])
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: 'Inkomsten',
+        data: months.map(m => m.totalIncome),
+        backgroundColor: 'rgba(34,197,94,0.8)',
+        borderColor:     'rgba(34,197,94,1)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Uitgaven',
+        data: months.map(m => m.totalExpenses),
+        backgroundColor: 'rgba(239,68,68,0.8)',
+        borderColor:     'rgba(239,68,68,1)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Sparen',
+        data: months.map(m => m.totalSavings),
+        backgroundColor: 'rgba(59,130,246,0.8)',
+        borderColor:     'rgba(59,130,246,1)',
+        borderWidth: 1,
+      },
+      netLineDataset(months.map(m => m.netBalance)),
+    ],
+  }
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    onClick(event, elements) {
+      if (elements.length > 0) onMonthClick(months[elements[0].index])
+    },
+    onHover(event, elements) {
+      event.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default'
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: ctx => `  ${ctx.dataset.label}: ${fmt(ctx.parsed.y)}`,
+        },
+      },
+      legend: { position: 'top' },
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: { ticks: { callback: v => '€ ' + v.toLocaleString('nl-NL') } },
+    },
+  }
+
+  return (
+    <div className="chart-container">
+      <div style={{ height: compact ? '260px' : '380px' }}>
+        <Bar data={data} options={options} />
+      </div>
+    </div>
+  )
+}

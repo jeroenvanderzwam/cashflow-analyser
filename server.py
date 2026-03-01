@@ -24,4 +24,4 @@ def get_data(year: str):
 
 
 # Serve static files — must be mounted last so API routes take priority
-app.mount('/', StaticFiles(directory='.', html=True), name='static')
+app.mount('/', StaticFiles(directory='dist', html=True), name='static')
