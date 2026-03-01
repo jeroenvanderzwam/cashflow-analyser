@@ -31,9 +31,13 @@ function trunc(s, n = 40) {
 // ---------------------------------------------------------------------------
 
 function showView(id) {
-  ['view-welcome', 'view-multiyear', 'view-year', 'view-month'].forEach(v => {
-    document.getElementById(v).hidden = (v !== id);
-  });
+  document.getElementById('view-multiyear').hidden = (id !== 'view-multiyear');
+  document.getElementById('view-month').hidden    = (id !== 'view-year+month');
+
+  // Year chart stays visible in both 'view-year' and 'view-year+month'
+  const yearEl = document.getElementById('view-year');
+  yearEl.hidden = (id === 'view-welcome' || id === 'view-multiyear');
+  yearEl.classList.toggle('chart-compact', id === 'view-year+month');
 }
 
 function updateNav(breadcrumb, showBack) {
@@ -193,9 +197,12 @@ function renderYearView(yearly) {
 function chartOptions(titleText, onClickCb) {
   return {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     onClick(event, elements) {
       if (elements.length > 0) onClickCb(elements[0].index);
+    },
+    onHover(event, elements) {
+      event.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
     },
     plugins: {
       title: {
@@ -232,7 +239,7 @@ function chartOptions(titleText, onClickCb) {
  */
 function renderMaandDetail(monthly) {
   _activeMonth = monthly;
-  showView('view-month');
+  showView('view-year+month');
   updateNav(monthly.label, true);
 
   // Wire threshold input (use onclick to avoid stacking on re-render)
@@ -250,12 +257,20 @@ function renderMaandDetail(monthly) {
 }
 
 function renderCards(monthly) {
+  // Bijzondere: only show when there are matching transactions
+  const bijzondereTxs = monthly.oneOffExpenses.filter(t => t.amount >= _specialThreshold);
+  const cardBijEl = document.getElementById('card-bijzonder');
+  cardBijEl.hidden = bijzondereTxs.length === 0;
+  cardBijEl.innerHTML = bijzondereTxs.length > 0 ? cardBijzonder(monthly) : '';
+
   document.getElementById('net-balance-bar').innerHTML = netBalanceIndicator(monthly);
   document.getElementById('card-inkomsten').innerHTML  = cardInkomsten(monthly);
   document.getElementById('card-vaste').innerHTML      = cardVasteLasten(monthly);
   document.getElementById('card-eenmalig').innerHTML   = cardEenmaligeUitgaven(monthly);
   document.getElementById('card-sparen').innerHTML     = cardSparen(monthly);
-  document.getElementById('card-bijzonder').innerHTML  = cardBijzonder(monthly);
+
+  // Scroll cards into view smoothly
+  document.getElementById('view-month').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   // Wire collapsible sections in Vaste lasten
   document.querySelectorAll('.category-toggle').forEach(btn => {

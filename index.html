@@ -34,20 +34,6 @@
   <!-- MAIN CONTENT -->
   <main id="app-main">
 
-    <!-- WELCOME STATE -->
-    <section id="view-welcome" class="view view-welcome">
-      <div class="welcome-content">
-        <div class="welcome-icon">📊</div>
-        <h2>Welkom bij Cashflow Analyser</h2>
-        <p>Laad één of meerdere ING CSV-exports om je cashflow te analyseren.</p>
-        <label class="file-btn file-btn-large" for="file-input">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          CSV bestanden laden
-        </label>
-        <p class="welcome-hint">Tip: selecteer meerdere jaren tegelijk voor een meerjarig overzicht.</p>
-      </div>
-    </section>
-
     <!-- MULTI-YEAR VIEW -->
     <section id="view-multiyear" class="view" hidden>
       <div class="chart-container">
@@ -73,11 +59,11 @@
         <input type="number" id="threshold-input" value="200" min="0" step="10">
       </div>
       <div class="card-grid" id="card-grid">
+        <div id="card-bijzonder"  class="card card-wide"></div>
         <div id="card-inkomsten"  class="card"></div>
         <div id="card-vaste"      class="card"></div>
         <div id="card-eenmalig"   class="card"></div>
         <div id="card-sparen"     class="card"></div>
-        <div id="card-bijzonder"  class="card card-wide"></div>
       </div>
     </section>
 

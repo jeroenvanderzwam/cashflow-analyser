@@ -75,14 +75,6 @@ body {
 }
 .file-btn:hover { background: #475569; }
 
-.file-btn-large {
-  background: var(--color-header-bg);
-  color: var(--color-header-text);
-  border-color: #475569;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  gap: 0.6rem;
-}
 
 /* ---- Error banner ---- */
 .error-banner {
@@ -128,22 +120,6 @@ body {
 /* ---- Views ---- */
 .view { }
 
-/* ---- Welcome ---- */
-.view-welcome {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-}
-.welcome-content {
-  text-align: center;
-  max-width: 420px;
-}
-.welcome-icon { font-size: 3rem; margin-bottom: 1rem; }
-.welcome-content h2 { font-size: 1.5rem; margin-bottom: 0.75rem; }
-.welcome-content p  { color: var(--color-text-muted); margin-bottom: 1rem; }
-.welcome-hint { font-size: 0.8rem; }
-
 /* ---- Chart container ---- */
 .chart-container {
   background: var(--color-surface);
@@ -159,6 +135,10 @@ body {
   color: var(--color-text-muted);
   font-size: 0.8rem;
   margin-bottom: 1rem;
+  padding: 0.4rem 0.75rem;
+  background: #f0f9ff;
+  border-radius: var(--radius);
+  border: 1px solid #bae6fd;
 }
 
 /* ---- Net balance bar ---- */
@@ -328,6 +308,19 @@ body {
   background: #f0f9ff;
   font-size: 0.8rem;
   color: var(--color-text-muted);
+}
+
+/* ---- Chart canvas default height ---- */
+#chart-year, #chart-multiyear {
+  height: 380px;
+}
+
+/* ---- Compact chart (when month detail is shown below) ---- */
+.chart-compact .chart-container {
+  padding: 0.6rem 1rem;
+}
+.chart-compact canvas {
+  max-height: 260px;
 }
 
 /* ---- Threshold bar ---- */
