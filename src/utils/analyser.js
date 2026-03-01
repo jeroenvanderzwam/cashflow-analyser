@@ -17,6 +17,7 @@ export const CATEGORY = Object.freeze({
   HORECA:          'Horeca',
   WONEN:           'Wonen',
   SPAREN:          'Sparen',
+  INVESTEREN:      'Investeren',
   AFLOSSING:       'Extra aflossing',
   SALARIS:         'Salaris',
   TIKKIES:         'Tikkies',
@@ -47,8 +48,10 @@ const ALWAYS_VARIABEL = new Set([
 ])
 
 const CATEGORY_RULES = [
-  [/spaardoel|oranje spaarrekening|flatex bank|toprekening/i,
+  [/spaardoel|oranje spaarrekening|toprekening/i,
    CATEGORY.SPAREN, TX_CLASS.SAVINGS],
+  [/flatex bank/i,
+   CATEGORY.INVESTEREN, TX_CLASS.SAVINGS],
   [/dg groep bv/i,
    CATEGORY.SALARIS, TX_CLASS.INCOME],
   [/via tikkie|via rabo betaalverzoek|via asn bank betaalverzoek|aab inz tikkie/i,
@@ -305,6 +308,13 @@ export function analyse(transactions) {
     const totalSavings          = months.reduce((s, m) => s + m.totalSavings, 0)
     const totalRepayments       = months.reduce((s, m) => s + m.totalRepayments, 0)
 
+    const allVastTxs         = months.flatMap(m => m.vastExpenses.flatMap(b => b.transactions))
+    const allVariabelTxs     = months.flatMap(m => m.variabelExpenses.flatMap(b => b.transactions))
+    const allOneOffTxs       = months.flatMap(m => m.oneOffExpenses)
+    const allRecurringIncome = months.flatMap(m => m.recurringIncome)
+    const allOneOffIncome    = months.flatMap(m => m.oneOffIncome)
+    const allSavings         = months.flatMap(m => m.savingsTransfers)
+
     return {
       year,
       totalIncome,
@@ -318,6 +328,12 @@ export function analyse(transactions) {
       totalRepayments,
       netBalance: totalIncome - totalExpenses,
       months,
+      vastExpenses:     groupByCategory(allVastTxs),
+      variabelExpenses: groupByCategory(allVariabelTxs),
+      oneOffExpenses:   allOneOffTxs.sort((a, b) => b.amount - a.amount),
+      recurringIncome:  allRecurringIncome,
+      oneOffIncome:     allOneOffIncome,
+      savingsTransfers: allSavings,
     }
   })
 }

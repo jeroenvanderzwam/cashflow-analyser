@@ -8,6 +8,7 @@ import MultiYearChart from './components/charts/MultiYearChart'
 import YearChart from './components/charts/YearChart'
 import YearSummary from './components/YearSummary'
 import MonthDetail from './components/month/MonthDetail'
+import YearDetail from './components/year/YearDetail'
 
 export default function App() {
   const [overviews, setOverviews]   = useState([])
@@ -109,7 +110,17 @@ export default function App() {
           <section id="view-year" className={`view${activeMonth ? ' chart-compact' : ''}`}>
             <YearChart yearly={activeYear} onMonthClick={setActiveMonth} compact={!!activeMonth} />
             <YearSummary yearly={activeYear} />
-            {!activeMonth && <p className="chart-hint">Klik op een maand voor het detail</p>}
+          </section>
+        )}
+
+        {/* Year detail — cards for the full year, shown when a year is selected but no month */}
+        {activeYear && !activeMonth && (
+          <section id="view-year-detail" className="view">
+            <YearDetail
+              yearly={activeYear}
+              threshold={threshold}
+              onThresholdChange={setThreshold}
+            />
           </section>
         )}
 
