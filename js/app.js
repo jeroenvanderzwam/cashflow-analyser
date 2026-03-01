@@ -8,10 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   fileInput.addEventListener('change', handleFilesChanged);
 
-  // Auto-load default data if available (js/default-data.js defines DEFAULT_CSV)
-  if (typeof DEFAULT_CSV !== 'undefined') {
-    loadFromTexts([DEFAULT_CSV]);
-  }
+  // Auto-fetch all available years from the FastAPI server
+  fetch('/api/years')
+    .then(r => r.json())
+    .then(years => Promise.all(years.map(y =>
+      fetch(`/api/data/${y}`).then(r => r.text())
+    )))
+    .then(csvTexts => loadFromTexts(csvTexts))
+    .catch(err => showError('Kon data niet laden: ' + err.message));
 
   function handleFilesChanged(event) {
     const files = Array.from(event.target.files);
@@ -21,11 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     Promise.all(files.map(readFileAsText))
       .then(csvTexts => loadFromTexts(csvTexts, files.map(f => f.name)))
-      .catch(err => {
-        errorBanner.textContent = err.message;
-        errorBanner.hidden = false;
-        console.error(err);
-      });
+      .catch(err => showError(err.message));
   }
 
   function loadFromTexts(csvTexts, fileNames) {
@@ -34,23 +34,18 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         allTransactions.push(...parseCSV(text));
       } catch (err) {
-        const name = fileNames ? fileNames[i] : 'standaard data';
+        const name = fileNames ? fileNames[i] : 'server data';
         throw new Error(`Fout in "${name}": ${err.message}`);
       }
     });
 
     if (allTransactions.length === 0) {
-      throw new Error('Geen transacties gevonden in de geselecteerde bestanden.');
+      throw new Error('Geen transacties gevonden.');
     }
 
     renderApp(analyse(allTransactions));
   }
 
-  /**
-   * Wrap FileReader in a Promise.
-   * @param {File} file
-   * @returns {Promise<string>}
-   */
   function readFileAsText(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -58,5 +53,11 @@ document.addEventListener('DOMContentLoaded', () => {
       reader.onerror = () => reject(new Error('Kan bestand niet lezen: ' + file.name));
       reader.readAsText(file, 'UTF-8');
     });
+  }
+
+  function showError(msg) {
+    errorBanner.textContent = msg;
+    errorBanner.hidden = false;
+    console.error(msg);
   }
 });

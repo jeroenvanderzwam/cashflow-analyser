@@ -26,6 +26,22 @@ function trunc(s, n = 40) {
   return s.length > n ? s.slice(0, n - 1) + '…' : s;
 }
 
+/** Shared net balance line dataset for Chart.js mixed charts */
+function netLineDataset(data) {
+  return {
+    type: 'line',
+    label: 'Netto',
+    data,
+    borderColor:      'rgba(234,179,8,1)',
+    backgroundColor:  'rgba(234,179,8,0.08)',
+    borderWidth: 2,
+    pointRadius: 4,
+    pointHoverRadius: 6,
+    tension: 0.3,
+    yAxisID: 'y',
+  };
+}
+
 // ---------------------------------------------------------------------------
 // View switching
 // ---------------------------------------------------------------------------
@@ -130,6 +146,7 @@ function renderMultiYearChart(overviews) {
           borderColor:     'rgba(59,130,246,1)',
           borderWidth: 1,
         },
+        netLineDataset(overviews.map(o => o.netBalance)),
       ],
     },
     options: chartOptions('Klik op een jaar voor details', (idx) => {
@@ -182,12 +199,36 @@ function renderYearView(yearly) {
           borderColor:     'rgba(59,130,246,1)',
           borderWidth: 1,
         },
+        netLineDataset(months.map(m => m.netBalance)),
       ],
     },
     options: chartOptions('Klik op een maand voor details', (idx) => {
       renderMaandDetail(months[idx]);
     }),
   });
+
+  renderYearSummary(yearly);
+}
+
+// ---------------------------------------------------------------------------
+// Year summary bar (average per month)
+// ---------------------------------------------------------------------------
+
+function renderYearSummary(yearly) {
+  const n = yearly.months.length;
+  if (n === 0) return;
+  const avg    = x  => fmt(x / n);
+  const netAvg = yearly.netBalance / n;
+  const netCls = netAvg >= 0 ? 'credit' : 'debit';
+
+  document.getElementById('year-summary').innerHTML = `
+    <div class="year-summary">
+      <span class="summary-label">Gem. per maand (${n} mnd):</span>
+      <span class="summary-item credit">${avg(yearly.totalIncome)} inkomen</span>
+      <span class="summary-item debit">${avg(yearly.totalExpenses)} uitgaven</span>
+      <span class="summary-item savings">${avg(yearly.totalSavings)} sparen</span>
+      <span class="summary-item ${netCls}">${avg(yearly.netBalance)} netto</span>
+    </div>`;
 }
 
 // ---------------------------------------------------------------------------

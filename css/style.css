@@ -315,6 +315,23 @@ body {
   height: 380px;
 }
 
+/* ---- Year summary bar ---- */
+.year-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.55rem 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  font-size: 0.8125rem;
+  margin-bottom: 0.5rem;
+}
+.summary-label { color: var(--color-text-muted); flex-shrink: 0; }
+.summary-item  { font-weight: 600; }
+
 /* ---- Compact chart (when month detail is shown below) ---- */
 .chart-compact .chart-container {
   padding: 0.6rem 1rem;
