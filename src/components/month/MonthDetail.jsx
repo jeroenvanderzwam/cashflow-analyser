@@ -11,15 +11,15 @@ export default function MonthDetail({ monthly, threshold, onThresholdChange }) {
   return (
     <>
       <NetBalanceBar monthly={monthly} />
-      <ThresholdBar threshold={threshold} onChange={onThresholdChange} />
       <div className="card-grid" id="card-grid">
         <IncomeCard monthly={monthly} />
         <RecurringExpensesCard monthly={monthly} />
         <VariableExpensesCard monthly={monthly} />
         <OneOffExpensesCard monthly={monthly} threshold={threshold} />
         <SavingsCard monthly={monthly} />
-        <SpecialExpensesCard monthly={monthly} threshold={threshold} />
       </div>
+      <ThresholdBar threshold={threshold} onChange={onThresholdChange} />
+      <SpecialExpensesCard monthly={monthly} threshold={threshold} />
     </>
   )
 }

@@ -1,21 +1,6 @@
 import { Bar } from 'react-chartjs-2'
 import { fmt } from '../../utils/fmt'
 
-function netLineDataset(data) {
-  return {
-    type: 'line',
-    label: 'Netto',
-    data,
-    borderColor:     'rgba(234,179,8,1)',
-    backgroundColor: 'rgba(234,179,8,0.08)',
-    borderWidth: 2,
-    pointRadius: 4,
-    pointHoverRadius: 6,
-    tension: 0.3,
-    yAxisID: 'y',
-  }
-}
-
 export default function MultiYearChart({ overviews, onYearClick }) {
   const labels = overviews.map(o => String(o.year))
 
@@ -66,7 +51,6 @@ export default function MultiYearChart({ overviews, onYearClick }) {
         borderColor:     'rgba(139,92,246,1)',
         borderWidth: 1,
       },
-      netLineDataset(overviews.map(o => o.netBalance)),
     ],
   }
 

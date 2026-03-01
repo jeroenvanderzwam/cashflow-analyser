@@ -9,15 +9,15 @@ import SavingsCard from '../month/cards/SavingsCard'
 export default function YearDetail({ yearly, threshold, onThresholdChange }) {
   return (
     <>
-      <ThresholdBar threshold={threshold} onChange={onThresholdChange} />
       <div className="card-grid" id="card-grid">
         <IncomeCard monthly={yearly} />
         <RecurringExpensesCard monthly={yearly} />
         <VariableExpensesCard monthly={yearly} />
         <OneOffExpensesCard monthly={yearly} threshold={threshold} />
         <SavingsCard monthly={yearly} />
-        <SpecialExpensesCard monthly={yearly} threshold={threshold} />
       </div>
+      <ThresholdBar threshold={threshold} onChange={onThresholdChange} />
+      <SpecialExpensesCard monthly={yearly} threshold={threshold} />
     </>
   )
 }

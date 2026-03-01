@@ -2,21 +2,6 @@ import { Bar } from 'react-chartjs-2'
 import { fmt } from '../../utils/fmt'
 import { MONTH_NAMES } from '../../utils/analyser'
 
-function netLineDataset(data) {
-  return {
-    type: 'line',
-    label: 'Netto',
-    data,
-    borderColor:     'rgba(234,179,8,1)',
-    backgroundColor: 'rgba(234,179,8,0.08)',
-    borderWidth: 2,
-    pointRadius: 4,
-    pointHoverRadius: 6,
-    tension: 0.3,
-    yAxisID: 'y',
-  }
-}
-
 export default function YearChart({ yearly, onMonthClick, compact }) {
   const months = yearly.months
   const labels = months.map(m => MONTH_NAMES[m.month - 1])
@@ -68,7 +53,6 @@ export default function YearChart({ yearly, onMonthClick, compact }) {
         borderColor:     'rgba(139,92,246,1)',
         borderWidth: 1,
       },
-      netLineDataset(months.map(m => m.netBalance)),
     ],
   }
 

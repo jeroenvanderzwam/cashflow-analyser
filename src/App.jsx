@@ -6,7 +6,6 @@ import Navigation from './components/Navigation'
 import ErrorBanner from './components/ErrorBanner'
 import MultiYearChart from './components/charts/MultiYearChart'
 import YearChart from './components/charts/YearChart'
-import YearSummary from './components/YearSummary'
 import MonthDetail from './components/month/MonthDetail'
 import YearDetail from './components/year/YearDetail'
 
@@ -109,7 +108,6 @@ export default function App() {
         {activeYear && (
           <section id="view-year" className={`view${activeMonth ? ' chart-compact' : ''}`}>
             <YearChart yearly={activeYear} onMonthClick={setActiveMonth} compact={!!activeMonth} />
-            <YearSummary yearly={activeYear} />
           </section>
         )}
 
