@@ -6,7 +6,7 @@ import { MONTH_NAMES } from '../../utils/analyser'
 const GROUPS = [
   { key: 'income',   label: 'Inkomen',      color: 'rgba(22,163,74,1)',
     datasets: [
-      { label: 'Structureel inkomen', short: 'Structureel' },
+      { label: 'Vast inkomen', short: 'Vast' },
       { label: 'Eenmalig inkomen',    short: 'Eenmalig' },
     ],
   },
@@ -17,7 +17,7 @@ const GROUPS = [
       { label: 'Eenmalige uitgaven',  short: 'Eenmalig' },
     ],
   },
-  { key: 'savings',  label: 'Sparen & meer', color: 'rgba(59,130,246,1)',
+  { key: 'savings',  label: 'Overig', color: 'rgba(59,130,246,1)',
     datasets: [
       { label: 'Sparen',          short: 'Sparen' },
       { label: 'Investeren',      short: 'Investeren' },
@@ -29,7 +29,7 @@ const GROUPS = [
 const ALL_LABELS = new Set(GROUPS.flatMap(g => g.datasets.map(d => d.label)))
 
 const ALL_DATASETS = [
-  { label: 'Structureel inkomen',  backgroundColor: 'rgba(22,163,74,0.85)',   borderColor: 'rgba(22,163,74,1)',   borderWidth: 1, stack: 'income' },
+  { label: 'Vast inkomen',  backgroundColor: 'rgba(22,163,74,0.85)',   borderColor: 'rgba(22,163,74,1)',   borderWidth: 1, stack: 'income' },
   { label: 'Eenmalig inkomen',     backgroundColor: 'rgba(134,239,172,0.85)', borderColor: 'rgba(134,239,172,1)', borderWidth: 1, stack: 'income' },
   { label: 'Vaste lasten',         backgroundColor: 'rgba(185,28,28,0.85)',   borderColor: 'rgba(185,28,28,1)',   borderWidth: 1, stack: 'expenses' },
   { label: 'Variabele uitgaven',   backgroundColor: 'rgba(239,68,68,0.8)',    borderColor: 'rgba(239,68,68,1)',   borderWidth: 1, stack: 'expenses' },
@@ -66,7 +66,7 @@ export default function YearChart({ yearly, onMonthClick, compact }) {
 
   const dataMap = Object.fromEntries(
     months.map(m => [m.month, {
-      'Structureel inkomen': m.totalStructuralIncome,
+      'Vast inkomen': m.totalStructuralIncome,
       'Eenmalig inkomen':    m.totalOneOffIncome,
       'Vaste lasten':        m.totalVast,
       'Variabele uitgaven':  m.totalVariabel,
