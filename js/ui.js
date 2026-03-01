@@ -6,10 +6,11 @@
 // ---------------------------------------------------------------------------
 // Module state
 // ---------------------------------------------------------------------------
-let _overviews   = [];   // YearlyOverview[]
-let _activeYear  = null; // YearlyOverview
-let _activeMonth = null; // MonthlyOverview
-let _chart       = null; // active Chart.js instance
+let _overviews         = [];   // YearlyOverview[]
+let _activeYear        = null; // YearlyOverview
+let _activeMonth       = null; // MonthlyOverview
+let _chart             = null; // active Chart.js instance
+let _specialThreshold  = 200;  // € threshold for "bijzondere uitgaven"
 
 // ---------------------------------------------------------------------------
 // Formatting helpers
@@ -234,11 +235,27 @@ function renderMaandDetail(monthly) {
   showView('view-month');
   updateNav(monthly.label, true);
 
+  // Wire threshold input (use onclick to avoid stacking on re-render)
+  const thresholdInput = document.getElementById('threshold-input');
+  thresholdInput.value = _specialThreshold;
+  thresholdInput.onchange = () => {
+    const val = parseFloat(thresholdInput.value);
+    if (!isNaN(val) && val >= 0) {
+      _specialThreshold = val;
+      renderCards(monthly);
+    }
+  };
+
+  renderCards(monthly);
+}
+
+function renderCards(monthly) {
   document.getElementById('net-balance-bar').innerHTML = netBalanceIndicator(monthly);
   document.getElementById('card-inkomsten').innerHTML  = cardInkomsten(monthly);
   document.getElementById('card-vaste').innerHTML      = cardVasteLasten(monthly);
   document.getElementById('card-eenmalig').innerHTML   = cardEenmaligeUitgaven(monthly);
   document.getElementById('card-sparen').innerHTML     = cardSparen(monthly);
+  document.getElementById('card-bijzonder').innerHTML  = cardBijzonder(monthly);
 
   // Wire collapsible sections in Vaste lasten
   document.querySelectorAll('.category-toggle').forEach(btn => {
@@ -348,22 +365,12 @@ function cardVasteLasten(ov) {
 }
 
 // ---------------------------------------------------------------------------
-// Card: Eenmalige uitgaven
+// Card: Eenmalige uitgaven (below threshold)
 // ---------------------------------------------------------------------------
 
 function cardEenmaligeUitgaven(ov) {
-  const total = ov.oneOffExpenses.reduce((s, t) => s + t.amount, 0);
-
-  if (ov.oneOffExpenses.length === 0) {
-    return `
-      <div class="card-header">
-        <h3 class="card-title">Eenmalige uitgaven</h3>
-        <span class="card-total debit">${fmt(0)}</span>
-      </div>
-      <div class="card-body"><p class="empty-state">Geen eenmalige uitgaven</p></div>`;
-  }
-
-  const rows = ov.oneOffExpenses.map(tx => txRow(tx.name, tx.amount, 'debit')).join('');
+  const txs   = ov.oneOffExpenses.filter(t => t.amount < _specialThreshold);
+  const total = txs.reduce((s, t) => s + t.amount, 0);
 
   return `
     <div class="card-header">
@@ -371,7 +378,29 @@ function cardEenmaligeUitgaven(ov) {
       <span class="card-total debit">${fmt(total)}</span>
     </div>
     <div class="card-body card-body-scroll">
-      ${rows}
+      ${txs.length === 0
+        ? '<p class="empty-state">Geen eenmalige uitgaven</p>'
+        : txs.map(tx => txRow(tx.name, tx.amount, 'debit')).join('')}
+    </div>`;
+}
+
+// ---------------------------------------------------------------------------
+// Card: Bijzondere uitgaven (at or above threshold, one-off only)
+// ---------------------------------------------------------------------------
+
+function cardBijzonder(ov) {
+  const txs   = ov.oneOffExpenses.filter(t => t.amount >= _specialThreshold);
+  const total = txs.reduce((s, t) => s + t.amount, 0);
+
+  return `
+    <div class="card-header">
+      <h3 class="card-title">Bijzondere uitgaven <span class="threshold-badge">≥ ${fmt(_specialThreshold)}</span></h3>
+      <span class="card-total debit">${fmt(total)}</span>
+    </div>
+    <div class="card-body">
+      ${txs.length === 0
+        ? '<p class="empty-state">Geen bijzondere uitgaven deze maand</p>'
+        : txs.map(tx => txRow(tx.name, tx.amount, 'debit')).join('')}
     </div>`;
 }
 

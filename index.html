@@ -67,11 +67,17 @@
     <!-- MONTH DETAIL VIEW -->
     <section id="view-month" class="view" hidden>
       <div id="net-balance-bar"></div>
+      <div class="threshold-bar">
+        <label for="threshold-input">Drempel bijzondere uitgaven:</label>
+        <span class="threshold-prefix">€</span>
+        <input type="number" id="threshold-input" value="200" min="0" step="10">
+      </div>
       <div class="card-grid" id="card-grid">
         <div id="card-inkomsten"  class="card"></div>
         <div id="card-vaste"      class="card"></div>
         <div id="card-eenmalig"   class="card"></div>
         <div id="card-sparen"     class="card"></div>
+        <div id="card-bijzonder"  class="card card-wide"></div>
       </div>
     </section>
 

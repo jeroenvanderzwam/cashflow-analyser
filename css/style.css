@@ -330,6 +330,45 @@ body {
   color: var(--color-text-muted);
 }
 
+/* ---- Threshold bar ---- */
+.threshold-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+.threshold-prefix { font-weight: 600; }
+.threshold-bar input[type="number"] {
+  width: 5rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 0.8125rem;
+  text-align: right;
+}
+
+/* ---- Threshold badge inside card title ---- */
+.threshold-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-expense);
+  background: var(--color-expense-bg);
+  border-radius: 999px;
+  padding: 0.1rem 0.45rem;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ---- Wide card (spans full grid width) ---- */
+.card-wide {
+  grid-column: 1 / -1;
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 600px) {
   #app-main { padding: 1rem; }
