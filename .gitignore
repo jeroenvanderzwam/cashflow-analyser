@@ -1,0 +1,7 @@
+# Personal financial data — never commit
+data/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
