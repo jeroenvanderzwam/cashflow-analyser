@@ -241,6 +241,8 @@ function buildOneMonth(txs, year, month) {
     .sort((a, b) => b.amount - a.amount)
 
   const regularSavingsOut = savings.filter(t => t.category === CATEGORY.SPAREN && t.direction === 'debit')
+  const regularSavingsIn  = savings.filter(t => t.category === CATEGORY.SPAREN && t.direction === 'credit')
+  const investments       = savings.filter(t => t.category === CATEGORY.INVESTEREN)
   const repayments        = savings.filter(t => t.category === CATEGORY.AFLOSSING)
 
   const totalIncome           = sumAmounts(income)
@@ -250,7 +252,8 @@ function buildOneMonth(txs, year, month) {
   const totalVast             = sumAmounts(vast)
   const totalVariabel         = sumAmounts(variabel)
   const totalOneOff           = sumAmounts(eenmalig)
-  const totalSavings          = sumAmounts(regularSavingsOut)
+  const totalSavings          = sumAmounts(regularSavingsOut) - sumAmounts(regularSavingsIn)
+  const totalInvestments      = sumAmounts(investments)
   const totalRepayments       = sumAmounts(repayments)
 
   return {
@@ -265,6 +268,7 @@ function buildOneMonth(txs, year, month) {
     totalVariabel,
     totalOneOff,
     totalSavings,
+    totalInvestments,
     totalRepayments,
     netBalance: totalIncome - totalExpenses,
     recurringIncome,
@@ -306,6 +310,7 @@ export function analyse(transactions) {
     const totalVariabel         = months.reduce((s, m) => s + m.totalVariabel, 0)
     const totalOneOff           = months.reduce((s, m) => s + m.totalOneOff, 0)
     const totalSavings          = months.reduce((s, m) => s + m.totalSavings, 0)
+    const totalInvestments      = months.reduce((s, m) => s + m.totalInvestments, 0)
     const totalRepayments       = months.reduce((s, m) => s + m.totalRepayments, 0)
 
     const allVastTxs         = months.flatMap(m => m.vastExpenses.flatMap(b => b.transactions))
@@ -325,6 +330,7 @@ export function analyse(transactions) {
       totalVariabel,
       totalOneOff,
       totalSavings,
+      totalInvestments,
       totalRepayments,
       netBalance: totalIncome - totalExpenses,
       months,

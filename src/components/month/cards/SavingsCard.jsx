@@ -37,7 +37,7 @@ export default function SavingsCard({ monthly }) {
   }
 
   return (
-    <Card title="Sparen & Aflossing" total={fmt(totalOut + totalInv + totalRep)} totalClass="savings-out">
+    <Card title="Sparen & Aflossing" total={fmt(totalOut - totalIn + totalInv + totalRep)} totalClass="savings-out">
 
       {regularTransfers.length > 0 && (
         <div className="category-section">
