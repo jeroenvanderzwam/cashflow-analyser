@@ -50,7 +50,7 @@ const ALWAYS_VARIABEL = new Set([
 const CATEGORY_RULES = [
   [/spaardoel|oranje spaarrekening|toprekening/i,
    CATEGORY.SPAREN, TX_CLASS.SAVINGS],
-  [/flatex bank/i,
+  [/flatex bank|beleggingsrek/i,
    CATEGORY.INVESTEREN, TX_CLASS.SAVINGS],
   [/dg groep bv/i,
    CATEGORY.SALARIS, TX_CLASS.INCOME],
