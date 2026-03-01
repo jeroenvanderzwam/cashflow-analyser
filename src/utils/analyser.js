@@ -154,15 +154,16 @@ function detectRecurring(transactions) {
 function assignExpenseTypes(transactions) {
   const expenses = transactions.filter(t => t.transactionClass === TX_CLASS.EXPENSE)
 
-  // Build monthly totals per merchant group to calculate CV
-  // key: "year|recurringKey" → Map<month, totalAmount>
+  // Build monthly totals per merchant group to calculate CV (cross-year)
+  // key: recurringKey → Map<"year-month", totalAmount>
   const monthlyTotals = new Map()
   for (const tx of expenses) {
     if (!tx.isRecurring) continue
-    const key = tx.year + '|' + tx.recurringKey
+    const key = tx.recurringKey
     if (!monthlyTotals.has(key)) monthlyTotals.set(key, new Map())
     const m = monthlyTotals.get(key)
-    m.set(tx.month, (m.get(tx.month) || 0) + tx.amount)
+    const monthKey = tx.year + '-' + tx.month
+    m.set(monthKey, (m.get(monthKey) || 0) + tx.amount)
   }
 
   // Calculate coefficient of variation (stddev / mean) per group
@@ -188,9 +189,9 @@ function assignExpenseTypes(transactions) {
       tx.expenseType = EXPENSE_TYPE.VARIABEL
       continue
     }
-    // Ambiguous category: use CV (threshold 0.2)
-    const cv = cvMap.get(tx.year + '|' + tx.recurringKey) ?? 1
-    tx.expenseType = cv < 0.2 ? EXPENSE_TYPE.VAST : EXPENSE_TYPE.VARIABEL
+    // Ambiguous category: use cross-year CV (threshold 0.3)
+    const cv = cvMap.get(tx.recurringKey) ?? 1
+    tx.expenseType = cv < 0.3 ? EXPENSE_TYPE.VAST : EXPENSE_TYPE.VARIABEL
   }
 
   // Non-expenses have no expenseType
