@@ -53,6 +53,13 @@ export default function MultiYearChart({ overviews, onYearClick }) {
         borderWidth: 1,
       },
       {
+        label: 'Investeren',
+        data: overviews.map(o => o.totalInvestments),
+        backgroundColor: 'rgba(20,184,166,0.8)',
+        borderColor:     'rgba(20,184,166,1)',
+        borderWidth: 1,
+      },
+      {
         label: 'Extra aflossing',
         data: overviews.map(o => o.totalRepayments),
         backgroundColor: 'rgba(139,92,246,0.8)',
