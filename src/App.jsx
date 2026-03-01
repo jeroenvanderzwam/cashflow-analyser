@@ -34,36 +34,18 @@ export default function App() {
     }
   }, [activeMonth])
 
-  function loadFromTexts(csvTexts, fileNames) {
+  function loadFromTexts(csvTexts) {
     try {
-      const txs = csvTexts.flatMap((text, i) => {
-        try {
-          return parseCSV(text)
-        } catch (err) {
-          throw new Error(`Fout in "${fileNames ? fileNames[i] : 'server data'}": ${err.message}`)
-        }
-      })
+      const txs = csvTexts.flatMap(text => parseCSV(text))
       if (txs.length === 0) throw new Error('Geen transacties gevonden.')
       const result = analyse(txs)
       setOverviews(result)
       setError(null)
-      // Single year: go straight to year view
       setActiveYear(result.length === 1 ? result[0] : null)
       setActiveMonth(null)
     } catch (err) {
       setError(err.message)
     }
-  }
-
-  function handleFilesSelected(files) {
-    Promise.all(files.map(f => new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload  = e => resolve(e.target.result)
-      reader.onerror = () => reject(new Error('Kan bestand niet lezen: ' + f.name))
-      reader.readAsText(f, 'UTF-8')
-    })))
-      .then(csvTexts => loadFromTexts(csvTexts, files.map(f => f.name)))
-      .catch(err => setError(err.message))
   }
 
   function handleBack() {
@@ -89,7 +71,7 @@ export default function App() {
 
   return (
     <>
-      <Header onFilesSelected={handleFilesSelected} />
+      <Header />
       {error && <ErrorBanner error={error} />}
       {overviews.length > 0 && (
         <Navigation breadcrumb={breadcrumb} showBack={showBack} onBack={handleBack} />
