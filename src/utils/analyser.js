@@ -120,7 +120,10 @@ function categorise(tx, customCategories) {
   const custom = customCategories?.[tx.nameLower]
   if (custom) {
     tx.category = custom
-    tx.transactionClass = CATEGORY_TX_CLASS[custom] ?? TX_CLASS.EXPENSE
+    const customClass = CATEGORY_TX_CLASS[custom] ?? TX_CLASS.EXPENSE
+    tx.transactionClass = (customClass === TX_CLASS.EXPENSE && tx.direction === 'credit')
+      ? TX_CLASS.INCOME
+      : customClass
     return
   }
 
@@ -130,13 +133,10 @@ function categorise(tx, customCategories) {
     if (regex.test(target)) {
       tx.category = category
 
-      if (category === CATEGORY.TIKKIES && tx.direction === 'credit') {
-        tx.transactionClass = TX_CLASS.INCOME
-      } else if (category === CATEGORY.BELASTINGEN && tx.direction === 'credit') {
-        tx.transactionClass = TX_CLASS.INCOME
-      } else {
-        tx.transactionClass = txClass
-      }
+      // Credits on expense categories are refunds → income
+      tx.transactionClass = (txClass === TX_CLASS.EXPENSE && tx.direction === 'credit')
+        ? TX_CLASS.INCOME
+        : txClass
 
       if (category === CATEGORY.WONEN &&
           /hypotheek|ing hypotheken/i.test(target) &&
