@@ -115,7 +115,7 @@ body {
 }
 
 /* ---- Main ---- */
-#app-main { padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
+#app-main { padding: 1.5rem; max-width: 1600px; margin: 0 auto; }
 
 /* ---- Views ---- */
 .view { }
