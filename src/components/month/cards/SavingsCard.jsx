@@ -2,7 +2,6 @@ import { useState } from 'react'
 import Card from './Card'
 import TransactionRow from './TransactionRow'
 import { fmt } from '../../../utils/fmt'
-import { CATEGORY } from '../../../utils/analyser'
 
 export default function SavingsCard({ monthly, activeDatasets }) {
   const { savingsTransfers } = monthly
@@ -22,9 +21,9 @@ export default function SavingsCard({ monthly, activeDatasets }) {
     })
   }
 
-  const regularTransfers = savingsTransfers.filter(t => t.category === CATEGORY.SPAREN)
-  const investments      = savingsTransfers.filter(t => t.category === CATEGORY.INVESTEREN)
-  const repayments       = savingsTransfers.filter(t => t.category === CATEGORY.AFLOSSING)
+  const regularTransfers = savingsTransfers.filter(t => t.category === 'Sparen')
+  const investments      = savingsTransfers.filter(t => t.category === 'Investeren')
+  const repayments       = savingsTransfers.filter(t => t.category === 'Extra aflossing')
 
   const regularOut = regularTransfers.filter(t => t.direction === 'debit')
   const regularIn  = regularTransfers.filter(t => t.direction === 'credit')

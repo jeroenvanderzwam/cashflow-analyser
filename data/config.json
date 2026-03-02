@@ -1,0 +1,115 @@
+{
+  "merchants": {
+    "AD HOC BEHEER BV": "Wonen"
+  },
+
+  "rules": [
+    {
+      "pattern": "spaardoel|oranje spaarrekening|toprekening",
+      "category": "Sparen",
+      "type": "savings"
+    },
+    {
+      "pattern": "flatex bank|beleggingsrek",
+      "category": "Investeren",
+      "type": "savings"
+    },
+    {
+      "pattern": "dg groep bv|geoict",
+      "category": "Salaris",
+      "type": "income"
+    },
+
+    {
+      "pattern": "belastingkantoor|gem.*belast|aanslagbiljet",
+      "category": "Gemeentelijke belastingen",
+      "type": "vast"
+    },
+    {
+      "pattern": "via tikkie|via rabo betaalverzoek|via asn bank betaalverzoek|aab inz tikkie",
+      "category": "Tikkies"
+    },
+
+    {
+      "pattern": "albert heijn|ah to go|bck\\*.*ah|lidl|jumbo|plus gils|plus markt|aldi|hoogvliet|bakker bart|dirk van den broek|spar |zwerwers|ekoplaza|biologisch",
+      "category": "Boodschappen",
+      "type": "variabel"
+    },
+    {
+      "pattern": "greenchoice|vattenfall|eneco|nuon|vitens|dunea|oxxio|waterbedrijf",
+      "category": "Energie",
+      "type": "vast"
+    },
+    {
+      "pattern": "zilveren kruis|cz groep|czgroep|menzis|vgz|ditzo|zorgverzeker",
+      "category": "Zorgverzekering",
+      "type": "vast"
+    },
+    {
+      "pattern": "nn schadeverzekering|centraal beheer|fbto|ing verzekeren|reaal|univé|nationale.nederlanden",
+      "category": "Verzekering",
+      "type": "vast"
+    },
+    {
+      "pattern": "ing hypotheken|hypotheek|vve |huurpenning|woningcorporati",
+      "category": "Wonen",
+      "type": "vast"
+    },
+    {
+      "pattern": "kosten oranjepakket|ing bank|kpn|t-mobile|vodafone libertel|vodafone|ziggo|netflix|spotify|strato|online\\.nl|xs4all|tele2|sim only",
+      "category": "Bank & Abonnementen",
+      "type": "vast"
+    },
+    {
+      "pattern": "ns groep|ov-chipkaart|translink|shell |bp |total |tamoil|tinq|gulf|esso |brandstof|parkeer|q-park|yellowbrick|msp parking|psa financial|stellantis fin serv",
+      "category": "Vervoer",
+      "type": "vast"
+    },
+    {
+      "pattern": "n\\.v\\.v\\.|natuurmonumenten|stichting vrijdag|vrijdag|vereniging eigen huis|museumkaart|greenpeace|amnesty|wwf |anwb ",
+      "category": "Lidmaatschappen",
+      "type": "vast"
+    },
+
+    {
+      "pattern": "ccv\\*|zettle\\*|square \\*|restaurant|brasserie|bistro|pannekoek|pizzeria|sushi|kebab|wereldburger|cafetaria|snackbar|takeaway|deliveroo|thuisbezorgd|uber eats|domino|new york pizza|kantine|starbucks|mcdonald|burger.?king|subway\\b|kfc\\b|five guys|koffie|coffee|lunchroom|lunchcafe|bakkerij|patisserie|ijssalon",
+      "category": "Horeca",
+      "type": "variabel"
+    },
+    {
+      "pattern": "efteling|pretpark|dierentuin|\\bzoo\\b|kinepolis|pathe\\b|bioscoop|cinema|theater|theatre|\\bconcert\\b|festival|attractie|evenement",
+      "category": "Vrije tijd",
+      "type": "variabel"
+    },
+    {
+      "pattern": "hotel|hostel|camping|kampeer|bungalow|vakantiepark|\\bresort\\b|airbnb|stayokay|roompot",
+      "category": "Reizen & verblijf",
+      "type": "variabel"
+    },
+    {
+      "pattern": "basic.?fit|fitness|sportschool|sportclub|sportver|zwembad|tennisclub|voetbalver|hockeyclub|handbalver|\\bpadel\\b|\\bsquash\\b|\\byoga\\b|pilates",
+      "category": "Sport & fitness",
+      "type": "variabel"
+    },
+    {
+      "pattern": "bol\\.com|coolblue|amazon|azerty|bax.shop|mediamarkt|wehkamp|zalando",
+      "category": "Online winkelen",
+      "type": "variabel"
+    },
+    {
+      "pattern": "h&m\\b|\\bzara\\b|c&a\\b|primark|scapino|we fashion|zeeman|jack.jones|\\bmango\\b|vero moda|esprit",
+      "category": "Kleding & mode",
+      "type": "variabel"
+    },
+    {
+      "pattern": "\\bikea\\b|hornbach|\\bgamma\\b|\\bkarwei\\b|\\bpraxis\\b|intratuin|leen bakker|kwantum|\\bxenos\\b|\\bblokker\\b",
+      "category": "Huis & tuin",
+      "type": "variabel"
+    },
+    {
+      "pattern": "apotheek|drogist|kruidvat|\\betos\\b|kapper|kappers|tandarts|huisarts|fysiother|opticien|brillen|thermen|wellness|\\bsauna\\b",
+      "category": "Gezondheid & verzorging",
+      "type": "variabel"
+    }
+  ]
+}

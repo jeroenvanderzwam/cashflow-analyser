@@ -15,10 +15,10 @@ def list_years():
     return sorted(files)
 
 
-@app.get('/api/categories')
-def get_categories():
-    """Return user-defined merchant→category mappings, or {} if not found."""
-    path = os.path.join(DATA_DIR, 'categories.json')
+@app.get('/api/config')
+def get_config():
+    """Return analyser configuration (rules, merchants, categories), or {} if not found."""
+    path = os.path.join(DATA_DIR, 'config.json')
     if not os.path.isfile(path):
         return {}
     with open(path, encoding='utf-8') as f:

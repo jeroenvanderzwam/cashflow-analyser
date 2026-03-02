@@ -48,15 +48,15 @@ export default function App() {
   const [error, setError]                 = useState(null)
   const [activeDatasets, setActiveDatasets] = useState(new Set(ALL_LABELS))
 
-  // Auto-load all years + custom categories from FastAPI on mount
+  // Auto-load all years + config from FastAPI on mount
   useEffect(() => {
     Promise.all([
-      fetch('/api/categories').then(r => r.json()),
+      fetch('/api/config').then(r => r.json()),
       fetch('/api/years')
         .then(r => r.json())
         .then(years => Promise.all(years.map(y => fetch(`/api/data/${y}`).then(r => r.text())))),
     ])
-      .then(([categories, csvTexts]) => loadFromTexts(csvTexts, categories))
+      .then(([config, csvTexts]) => loadFromTexts(csvTexts, config))
       .catch(err => setError('Kon data niet laden: ' + err.message))
   }, [])
 
