@@ -13,7 +13,6 @@ const GROUPS = [
     datasets: [
       { label: 'Vaste lasten',        short: 'Vast' },
       { label: 'Variabele uitgaven',  short: 'Variabel' },
-      { label: 'Eenmalige uitgaven',  short: 'Eenmalig' },
     ],
   },
   { key: 'savings',  label: 'Overig', color: 'rgba(59,130,246,1)',
@@ -32,7 +31,6 @@ const ALL_DATASETS = [
   { label: 'Variabel inkomen',     backgroundColor: 'rgba(134,239,172,0.85)', borderColor: 'rgba(134,239,172,1)', borderWidth: 1, stack: 'income' },
   { label: 'Vaste lasten',         backgroundColor: 'rgba(185,28,28,0.85)',   borderColor: 'rgba(185,28,28,1)',   borderWidth: 1, stack: 'expenses' },
   { label: 'Variabele uitgaven',   backgroundColor: 'rgba(239,68,68,0.8)',    borderColor: 'rgba(239,68,68,1)',   borderWidth: 1, stack: 'expenses' },
-  { label: 'Eenmalige uitgaven',   backgroundColor: 'rgba(252,165,165,0.85)', borderColor: 'rgba(252,165,165,1)', borderWidth: 1, stack: 'expenses' },
   { label: 'Sparen',               backgroundColor: 'rgba(59,130,246,0.8)',   borderColor: 'rgba(59,130,246,1)',  borderWidth: 1 },
   { label: 'Investeren',           backgroundColor: 'rgba(20,184,166,0.8)',   borderColor: 'rgba(20,184,166,1)',  borderWidth: 1 },
   { label: 'Extra aflossing',      backgroundColor: 'rgba(139,92,246,0.8)',   borderColor: 'rgba(139,92,246,1)',  borderWidth: 1 },
@@ -68,7 +66,6 @@ export default function MultiYearChart({ overviews, onYearClick }) {
       'Variabel inkomen':    o.totalOneOffIncome,
       'Vaste lasten':        o.totalVast,
       'Variabele uitgaven':  o.totalVariabel,
-      'Eenmalige uitgaven':  o.totalOneOff,
       'Sparen':              o.totalSavings,
       'Investeren':          o.totalInvestments,
       'Extra aflossing':     o.totalRepayments,
