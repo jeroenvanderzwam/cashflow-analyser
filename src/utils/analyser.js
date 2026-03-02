@@ -89,7 +89,7 @@ const CATEGORY_RULES = [
    CATEGORY.WONEN, TX_CLASS.EXPENSE],
   [/kosten oranjepakket|ing bank|kpn|t-mobile|vodafone libertel|vodafone|ziggo|netflix|spotify|strato|online\.nl|xs4all|tele2|sim only/i,
    CATEGORY.BANK_ABO, TX_CLASS.EXPENSE],
-  [/ns groep|ov-chipkaart|translink|shell |bp |total |tamoil|tinq|gulf|esso |brandstof|parkeer|q-park|yellowbrick|msp parking/i,
+  [/ns groep|ov-chipkaart|translink|shell |bp |total |tamoil|tinq|gulf|esso |brandstof|parkeer|q-park|yellowbrick|msp parking|psa financial|stellantis fin serv/i,
    CATEGORY.VERVOER, TX_CLASS.EXPENSE],
   [/n\.v\.v\.|natuurmonumenten|stichting vrijdag|vrijdag|vereniging eigen huis|museumkaart|greenpeace|amnesty|wwf |anwb /i,
    CATEGORY.LIDMAATSCHAPPEN, TX_CLASS.EXPENSE],
