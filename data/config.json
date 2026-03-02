@@ -1,6 +1,7 @@
 {
   "merchants": {
-    "AD HOC BEHEER BV": "Wonen"
+    "AD HOC BEHEER BV": "Wonen",
+    "ING Bank N.V. Hypotheken": "Extra aflossing"
   },
 
   "rules": [
@@ -31,7 +32,7 @@
     },
 
     {
-      "pattern": "albert heijn|ah to go|bck\\*.*ah|lidl|jumbo|\\bplus\\b|aldi|hoogvliet|bakker bart|dirk van den broek|spar |zwerwers|ekoplaza|biologisch|dekamarkt|amazing oriental|\\bcoop\\b|vomar|gall.*gall|\\bmakro\\b",
+      "pattern": "albert heijn|ah to go|bck\\*.*ah|lidl|jumbo|\\bplus\\b|aldi|hoogvliet|bakker bart|dirk van den broek|spar |zwerwers|ekoplaza|biologisch|dekamarkt|amazing oriental|\\bcoop\\b|vomar|gall.*gall|\\bmakro\\b|\\bremar\\b",
       "category": "Boodschappen",
       "type": "variabel"
     },
@@ -72,7 +73,7 @@
     },
 
     {
-      "pattern": "ccv\\*|zettle\\*|square \\*|\\brestaur|brasserie|bistro|pannekoek|pizza|sushi|kebab|wereldburger|cafetaria|snackbar|takeaway|deliveroo|thuisbezorgd|uber eats|domino|new york pizza|kantine|starbucks|mcdonald|burger.?king|subway\\b|kfc\\b|five guys|koffie|coffee|lunchroom|lunchcafe|bakkerij|patisserie|ijssalon|lebkov|het pakhuis|negende cirkel|route 66|ibn battuta|big easy|pg centraal|hemingway|magoya|fatoush",
+      "pattern": "ccv\\*|zettle\\*|square \\*|\\brestaur|brasserie|bistro|pannekoek|pizza|sushi|kebab|wereldburger|cafetaria|snackbar|takeaway|deliveroo|thuisbezorgd|uber eats|domino|new york pizza|kantine|starbucks|mcdonald|burger.?king|subway\\b|kfc\\b|five guys|koffie|coffee|lunchroom|lunchcafe|bakkerij|patisserie|ijssalon|lebkov|het pakhuis|negende cirkel|route 66|ibn battuta|big easy|pg centraal|hemingway|magoya|fatoush|bax bier|de herbivoor",
       "category": "Horeca",
       "type": "variabel"
     },
