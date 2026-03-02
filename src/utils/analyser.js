@@ -21,6 +21,7 @@ export const CATEGORY = Object.freeze({
   AFLOSSING:       'Extra aflossing',
   SALARIS:         'Salaris',
   TIKKIES:         'Tikkies',
+  BELASTINGEN:     'Gemeentelijke belastingen',
   OVERIG:          'Overig',
 })
 
@@ -48,6 +49,7 @@ const CATEGORY_TX_CLASS = {
 const ALWAYS_VAST = new Set([
   CATEGORY.ENERGIE, CATEGORY.ZORGVERZEKERING, CATEGORY.VERZEKERING,
   CATEGORY.BANK_ABO, CATEGORY.WONEN, CATEGORY.LIDMAATSCHAPPEN,
+  CATEGORY.BELASTINGEN, CATEGORY.VERVOER,
 ])
 
 // Categories that are variable by nature — regardless of CV
@@ -62,6 +64,8 @@ const CATEGORY_RULES = [
    CATEGORY.INVESTEREN, TX_CLASS.SAVINGS],
   [/dg groep bv|geoict/i,
    CATEGORY.SALARIS, TX_CLASS.INCOME],
+  [/belastingkantoor|gem.*belast|aanslagbiljet/i,
+   CATEGORY.BELASTINGEN, TX_CLASS.EXPENSE],
   [/via tikkie|via rabo betaalverzoek|via asn bank betaalverzoek|aab inz tikkie/i,
    CATEGORY.TIKKIES, TX_CLASS.EXPENSE],
   [/albert heijn|ah to go|bck\*.*ah|lidl|jumbo|plus gils|plus markt|aldi|hoogvliet|bakker bart|dirk van den broek|spar |zwerwers|ekoplaza|biologisch/i,
@@ -104,6 +108,8 @@ function categorise(tx, customCategories) {
       tx.category = category
 
       if (category === CATEGORY.TIKKIES && tx.direction === 'credit') {
+        tx.transactionClass = TX_CLASS.INCOME
+      } else if (category === CATEGORY.BELASTINGEN && tx.direction === 'credit') {
         tx.transactionClass = TX_CLASS.INCOME
       } else {
         tx.transactionClass = txClass
@@ -193,16 +199,16 @@ function assignExpenseTypes(transactions) {
   }
 
   for (const tx of expenses) {
-    if (!tx.isRecurring) {
-      tx.expenseType = EXPENSE_TYPE.EENMALIG
-      continue
-    }
     if (ALWAYS_VAST.has(tx.category)) {
       tx.expenseType = EXPENSE_TYPE.VAST
       continue
     }
     if (ALWAYS_VARIABEL.has(tx.category)) {
       tx.expenseType = EXPENSE_TYPE.VARIABEL
+      continue
+    }
+    if (!tx.isRecurring) {
+      tx.expenseType = EXPENSE_TYPE.EENMALIG
       continue
     }
     // Ambiguous category: use cross-year CV (threshold 0.3)
