@@ -13,7 +13,7 @@ export default function YearSummary({ yearly }) {
       <span className="summary-label">Gem. per maand ({n} mnd):</span>
       <span className="summary-item credit">{avg(yearly.totalStructuralIncome)} structureel inkomen</span>
       {yearly.totalOneOffIncome > 0 && (
-        <span className="summary-item credit" style={{ opacity: 0.65 }}>{avg(yearly.totalOneOffIncome)} eenmalig inkomen</span>
+        <span className="summary-item credit" style={{ opacity: 0.65 }}>{avg(yearly.totalOneOffIncome)} variabel inkomen</span>
       )}
       <span className="summary-item debit">{avg(yearly.totalVast)} vast</span>
       <span className="summary-item debit" style={{ opacity: 0.8 }}>{avg(yearly.totalVariabel)} variabel</span>

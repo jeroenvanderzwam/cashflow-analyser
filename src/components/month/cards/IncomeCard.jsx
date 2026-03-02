@@ -8,8 +8,8 @@ export default function IncomeCard({ monthly, activeDatasets }) {
   const [openSections, setOpenSections] = useState(new Set())
 
   const showVast     = !activeDatasets || activeDatasets.has('Vast inkomen')
-  const showEenmalig = !activeDatasets || activeDatasets.has('Eenmalig inkomen')
-  if (!showVast && !showEenmalig) return null
+  const showVariabel = !activeDatasets || activeDatasets.has('Variabel inkomen')
+  if (!showVast && !showVariabel) return null
 
   function toggle(key) {
     setOpenSections(prev => {
@@ -46,14 +46,14 @@ export default function IncomeCard({ monthly, activeDatasets }) {
         </div>
       )}
 
-      {showEenmalig && oneOffIncome.length > 0 && (
+      {showVariabel && oneOffIncome.length > 0 && (
         <div className="category-section">
-          <button className="category-toggle" onClick={() => toggle('eenmalig')}>
-            <span className="toggle-arrow">{openSections.has('eenmalig') ? '▼' : '▶'}</span>
-            <span className="category-name">Eenmalig</span>
+          <button className="category-toggle" onClick={() => toggle('variabel')}>
+            <span className="toggle-arrow">{openSections.has('variabel') ? '▼' : '▶'}</span>
+            <span className="category-name">Variabel</span>
             <span className="category-total credit" style={{ opacity: 0.75 }}>{fmt(oneOffTotal)}</span>
           </button>
-          {openSections.has('eenmalig') && (
+          {openSections.has('variabel') && (
             <div className="category-body">
               {oneOffIncome.map(tx => (
                 <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="credit" />
