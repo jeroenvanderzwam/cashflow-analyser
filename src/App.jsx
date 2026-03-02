@@ -16,12 +16,15 @@ export default function App() {
   const [threshold, setThreshold]   = useState(200)
   const [error, setError]           = useState(null)
 
-  // Auto-load all years from FastAPI on mount
+  // Auto-load all years + custom categories from FastAPI on mount
   useEffect(() => {
-    fetch('/api/years')
-      .then(r => r.json())
-      .then(years => Promise.all(years.map(y => fetch(`/api/data/${y}`).then(r => r.text()))))
-      .then(csvTexts => loadFromTexts(csvTexts))
+    Promise.all([
+      fetch('/api/categories').then(r => r.json()),
+      fetch('/api/years')
+        .then(r => r.json())
+        .then(years => Promise.all(years.map(y => fetch(`/api/data/${y}`).then(r => r.text())))),
+    ])
+      .then(([categories, csvTexts]) => loadFromTexts(csvTexts, categories))
       .catch(err => setError('Kon data niet laden: ' + err.message))
   }, [])
 
@@ -34,11 +37,11 @@ export default function App() {
     }
   }, [activeMonth])
 
-  function loadFromTexts(csvTexts) {
+  function loadFromTexts(csvTexts, categories = {}) {
     try {
       const txs = csvTexts.flatMap(text => parseCSV(text))
       if (txs.length === 0) throw new Error('Geen transacties gevonden.')
-      const result = analyse(txs)
+      const result = analyse(txs, categories)
       setOverviews(result)
       setError(null)
       setActiveYear(result.length === 1 ? result[0] : null)

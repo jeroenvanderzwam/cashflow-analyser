@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+import json
 import os
 
 app = FastAPI()
@@ -12,6 +13,16 @@ def list_years():
     """Return sorted list of available year strings based on data/*.csv filenames."""
     files = [f[:-4] for f in os.listdir(DATA_DIR) if f.endswith('.csv')]
     return sorted(files)
+
+
+@app.get('/api/categories')
+def get_categories():
+    """Return user-defined merchant→category mappings, or {} if not found."""
+    path = os.path.join(DATA_DIR, 'categories.json')
+    if not os.path.isfile(path):
+        return {}
+    with open(path, encoding='utf-8') as f:
+        return json.load(f)
 
 
 @app.get('/api/data/{year}')

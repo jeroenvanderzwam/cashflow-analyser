@@ -1,5 +1,5 @@
 # Personal financial data — never commit
-data/
+data/*.csv
 
 # OS / editor
 .DS_Store

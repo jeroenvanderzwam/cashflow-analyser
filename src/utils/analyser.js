@@ -36,6 +36,14 @@ const TX_CLASS = Object.freeze({
   SAVINGS: 'savings',
 })
 
+// Default transaction class per category (used for custom merchant mappings)
+const CATEGORY_TX_CLASS = {
+  [CATEGORY.SPAREN]:    'savings',
+  [CATEGORY.INVESTEREN]: 'savings',
+  [CATEGORY.AFLOSSING]: 'savings',
+  [CATEGORY.SALARIS]:   'income',
+}
+
 // Categories that are fixed by nature — regardless of CV
 const ALWAYS_VAST = new Set([
   CATEGORY.ENERGIE, CATEGORY.ZORGVERZEKERING, CATEGORY.VERZEKERING,
@@ -80,7 +88,15 @@ const CATEGORY_RULES = [
 // Categorisation
 // ---------------------------------------------------------------------------
 
-function categorise(tx) {
+function categorise(tx, customCategories) {
+  // User-defined merchant overrides take priority
+  const custom = customCategories?.[tx.nameLower]
+  if (custom) {
+    tx.category = custom
+    tx.transactionClass = CATEGORY_TX_CLASS[custom] ?? TX_CLASS.EXPENSE
+    return
+  }
+
   const target = tx.nameLower + ' ' + tx.description.toLowerCase()
 
   for (const [regex, category, txClass] of CATEGORY_RULES) {
@@ -292,8 +308,12 @@ function buildMonthlyOverviews(txs, year) {
 // Main entry point
 // ---------------------------------------------------------------------------
 
-export function analyse(transactions) {
-  transactions.forEach(categorise)
+export function analyse(transactions, customCategories = {}) {
+  // Normalise keys to lowercase for case-insensitive matching
+  const normCustom = Object.fromEntries(
+    Object.entries(customCategories).map(([k, v]) => [k.toLowerCase(), v])
+  )
+  transactions.forEach(tx => categorise(tx, normCustom))
   detectRecurring(transactions)
   assignExpenseTypes(transactions)
 
