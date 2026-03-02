@@ -28,10 +28,14 @@ export default function SavingsCard({ monthly, activeDatasets }) {
 
   const regularOut = regularTransfers.filter(t => t.direction === 'debit')
   const regularIn  = regularTransfers.filter(t => t.direction === 'credit')
+  const investOut  = investments.filter(t => t.direction === 'debit')
+  const investIn   = investments.filter(t => t.direction === 'credit')
+  const repOut     = repayments.filter(t => t.direction === 'debit')
+  const repIn      = repayments.filter(t => t.direction === 'credit')
   const totalOut   = regularOut.reduce((s, t) => s + t.amount, 0)
   const totalIn    = regularIn.reduce((s, t)  => s + t.amount, 0)
-  const totalInv   = investments.reduce((s, t)  => s + t.amount, 0)
-  const totalRep   = repayments.reduce((s, t)  => s + t.amount, 0)
+  const totalInv   = investOut.reduce((s, t) => s + t.amount, 0) - investIn.reduce((s, t) => s + t.amount, 0)
+  const totalRep   = repOut.reduce((s, t) => s + t.amount, 0) - repIn.reduce((s, t) => s + t.amount, 0)
 
   if (savingsTransfers.length === 0) {
     return (
@@ -73,8 +77,11 @@ export default function SavingsCard({ monthly, activeDatasets }) {
           </button>
           {openSections.has('investeren') && (
             <div className="category-body">
-              {investments.map(tx => (
+              {investOut.map(tx => (
                 <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="savings-out" prefix="→" />
+              ))}
+              {investIn.map(tx => (
+                <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="savings-in" prefix="←" />
               ))}
             </div>
           )}
@@ -91,8 +98,11 @@ export default function SavingsCard({ monthly, activeDatasets }) {
           </button>
           {openSections.has('aflossing') && (
             <div className="category-body">
-              {repayments.map(tx => (
+              {repOut.map(tx => (
                 <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="savings-out" prefix="⬇" />
+              ))}
+              {repIn.map(tx => (
+                <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="savings-in" prefix="←" />
               ))}
             </div>
           )}

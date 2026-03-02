@@ -286,8 +286,10 @@ function buildOneMonth(txs, year, month) {
 
   const regularSavingsOut = savings.filter(t => t.category === CATEGORY.SPAREN && t.direction === 'debit')
   const regularSavingsIn  = savings.filter(t => t.category === CATEGORY.SPAREN && t.direction === 'credit')
-  const investments       = savings.filter(t => t.category === CATEGORY.INVESTEREN)
-  const repayments        = savings.filter(t => t.category === CATEGORY.AFLOSSING)
+  const investOut         = savings.filter(t => t.category === CATEGORY.INVESTEREN && t.direction === 'debit')
+  const investIn          = savings.filter(t => t.category === CATEGORY.INVESTEREN && t.direction === 'credit')
+  const repOut            = savings.filter(t => t.category === CATEGORY.AFLOSSING && t.direction === 'debit')
+  const repIn             = savings.filter(t => t.category === CATEGORY.AFLOSSING && t.direction === 'credit')
 
   const totalIncome           = sumAmounts(income)
   const totalStructuralIncome = sumAmounts(recurringIncome)
@@ -296,8 +298,8 @@ function buildOneMonth(txs, year, month) {
   const totalVast             = sumAmounts(vast)
   const totalVariabel         = sumAmounts(variabel)
   const totalSavings          = sumAmounts(regularSavingsOut) - sumAmounts(regularSavingsIn)
-  const totalInvestments      = sumAmounts(investments)
-  const totalRepayments       = sumAmounts(repayments)
+  const totalInvestments      = sumAmounts(investOut) - sumAmounts(investIn)
+  const totalRepayments       = sumAmounts(repOut) - sumAmounts(repIn)
 
   return {
     year,
