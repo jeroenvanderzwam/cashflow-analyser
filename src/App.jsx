@@ -9,6 +9,38 @@ import YearChart, { ALL_LABELS } from './components/charts/YearChart'
 import MonthDetail from './components/month/MonthDetail'
 import YearDetail from './components/year/YearDetail'
 
+function mergeGroups(groups) {
+  const map = new Map()
+  for (const g of groups) {
+    if (!map.has(g.category)) map.set(g.category, { category: g.category, transactions: [], total: 0 })
+    const entry = map.get(g.category)
+    entry.transactions.push(...g.transactions)
+    entry.total += g.total
+  }
+  return Array.from(map.values()).sort((a, b) => b.total - a.total)
+}
+
+function buildAllYearsOverview(overviews) {
+  const sum = key => overviews.reduce((s, o) => s + o[key], 0)
+  return {
+    totalIncome:           sum('totalIncome'),
+    totalStructuralIncome: sum('totalStructuralIncome'),
+    totalOneOffIncome:     sum('totalOneOffIncome'),
+    totalExpenses:         sum('totalExpenses'),
+    totalVast:             sum('totalVast'),
+    totalVariabel:         sum('totalVariabel'),
+    totalSavings:          sum('totalSavings'),
+    totalInvestments:      sum('totalInvestments'),
+    totalRepayments:       sum('totalRepayments'),
+    netBalance:            sum('netBalance'),
+    vastExpenses:     mergeGroups(overviews.flatMap(o => o.vastExpenses)),
+    variabelExpenses: mergeGroups(overviews.flatMap(o => o.variabelExpenses)),
+    recurringIncome:  overviews.flatMap(o => o.recurringIncome),
+    oneOffIncome:     overviews.flatMap(o => o.oneOffIncome),
+    savingsTransfers: overviews.flatMap(o => o.savingsTransfers),
+  }
+}
+
 export default function App() {
   const [overviews, setOverviews]         = useState([])
   const [activeYear, setActiveYear]       = useState(null)
@@ -110,6 +142,13 @@ export default function App() {
           <section id="view-multiyear" className="view">
             <MultiYearChart overviews={overviews} onYearClick={setActiveYear} />
             <p className="chart-hint">Klik op een jaar voor het maandoverzicht</p>
+          </section>
+        )}
+
+        {/* All-years detail — totaalkaarten onder de multi-year chart */}
+        {!activeYear && overviews.length > 1 && (
+          <section id="view-allyears-detail" className="view">
+            <YearDetail yearly={buildAllYearsOverview(overviews)} activeDatasets={activeDatasets} />
           </section>
         )}
 
