@@ -22,13 +22,19 @@ export const CATEGORY = Object.freeze({
   SALARIS:         'Salaris',
   TIKKIES:         'Tikkies',
   BELASTINGEN:     'Gemeentelijke belastingen',
+  VRIJE_TIJD:      'Vrije tijd',
+  REIZEN:          'Reizen & verblijf',
+  SPORT_FITNESS:   'Sport & fitness',
+  ONLINE_WINKELEN: 'Online winkelen',
+  KLEDING:         'Kleding & mode',
+  HUIS_TUIN:       'Huis & tuin',
+  GEZONDHEID:      'Gezondheid & verzorging',
   OVERIG:          'Overig',
 })
 
 export const EXPENSE_TYPE = Object.freeze({
   VAST:     'vast',
   VARIABEL: 'variabel',
-  EENMALIG: 'eenmalig',
 })
 
 const TX_CLASS = Object.freeze({
@@ -55,6 +61,9 @@ const ALWAYS_VAST = new Set([
 // Categories that are variable by nature — regardless of CV
 const ALWAYS_VARIABEL = new Set([
   CATEGORY.BOODSCHAPPEN, CATEGORY.HORECA,
+  CATEGORY.VRIJE_TIJD, CATEGORY.REIZEN, CATEGORY.SPORT_FITNESS,
+  CATEGORY.ONLINE_WINKELEN, CATEGORY.KLEDING, CATEGORY.HUIS_TUIN,
+  CATEGORY.GEZONDHEID,
 ])
 
 const CATEGORY_RULES = [
@@ -70,7 +79,7 @@ const CATEGORY_RULES = [
    CATEGORY.TIKKIES, TX_CLASS.EXPENSE],
   [/albert heijn|ah to go|bck\*.*ah|lidl|jumbo|plus gils|plus markt|aldi|hoogvliet|bakker bart|dirk van den broek|spar |zwerwers|ekoplaza|biologisch/i,
    CATEGORY.BOODSCHAPPEN, TX_CLASS.EXPENSE],
-  [/greenchoice|vattenfall|eneco|nuon|vitens|dunea|oxxio/i,
+  [/greenchoice|vattenfall|eneco|nuon|vitens|dunea|oxxio|waterbedrijf/i,
    CATEGORY.ENERGIE, TX_CLASS.EXPENSE],
   [/zilveren kruis|cz groep|czgroep|menzis|vgz|ditzo|zorgverzeker/i,
    CATEGORY.ZORGVERZEKERING, TX_CLASS.EXPENSE],
@@ -84,8 +93,22 @@ const CATEGORY_RULES = [
    CATEGORY.VERVOER, TX_CLASS.EXPENSE],
   [/n\.v\.v\.|natuurmonumenten|stichting vrijdag|vrijdag|vereniging eigen huis|museumkaart|greenpeace|amnesty|wwf |anwb /i,
    CATEGORY.LIDMAATSCHAPPEN, TX_CLASS.EXPENSE],
-  [/ccv\*|zettle\*|square \*|restaurant|brasserie|bistro|pannekoek|pizzeria|sushi|kebab|wereldburger|cafetaria|snackbar|takeaway|deliveroo|thuisbezorgd|uber eats|domino|new york pizza/i,
+  [/ccv\*|zettle\*|square \*|restaurant|brasserie|bistro|pannekoek|pizzeria|sushi|kebab|wereldburger|cafetaria|snackbar|takeaway|deliveroo|thuisbezorgd|uber eats|domino|new york pizza|kantine|starbucks|mcdonald|burger.?king|subway\b|kfc\b|five guys|koffie|coffee|lunchroom|lunchcafe|bakkerij|patisserie|ijssalon/i,
    CATEGORY.HORECA, TX_CLASS.EXPENSE],
+  [/efteling|pretpark|dierentuin|\bzoo\b|kinepolis|pathe\b|bioscoop|cinema|theater|theatre|\bconcert\b|festival|attractie|evenement/i,
+   CATEGORY.VRIJE_TIJD, TX_CLASS.EXPENSE],
+  [/hotel|hostel|camping|kampeer|bungalow|vakantiepark|\bresort\b|airbnb|stayokay|roompot/i,
+   CATEGORY.REIZEN, TX_CLASS.EXPENSE],
+  [/basic.?fit|fitness|sportschool|sportclub|sportver|zwembad|tennisclub|voetbalver|hockeyclub|handbalver|\bpadel\b|\bsquash\b|\byoga\b|pilates/i,
+   CATEGORY.SPORT_FITNESS, TX_CLASS.EXPENSE],
+  [/bol\.com|coolblue|amazon|azerty|bax.shop|mediamarkt|wehkamp|zalando/i,
+   CATEGORY.ONLINE_WINKELEN, TX_CLASS.EXPENSE],
+  [/h&m\b|\bzara\b|c&a\b|primark|scapino|we fashion|zeeman|jack.jones|\bmango\b|vero moda|esprit/i,
+   CATEGORY.KLEDING, TX_CLASS.EXPENSE],
+  [/\bikea\b|hornbach|\bgamma\b|\bkarwei\b|\bpraxis\b|intratuin|leen bakker|kwantum|\bxenos\b|\bblokker\b/i,
+   CATEGORY.HUIS_TUIN, TX_CLASS.EXPENSE],
+  [/apotheek|drogist|kruidvat|\betos\b|kapper|kappers|tandarts|huisarts|fysiother|opticien|brillen|thermen|wellness|\bsauna\b/i,
+   CATEGORY.GEZONDHEID, TX_CLASS.EXPENSE],
 ]
 
 // ---------------------------------------------------------------------------
@@ -169,7 +192,7 @@ function detectRecurring(transactions) {
 }
 
 // ---------------------------------------------------------------------------
-// Expense type assignment (vast / variabel / eenmalig)
+// Expense type assignment (vast / variabel)
 // Uses category overrides first, then coefficient of variation for ambiguous cases
 // ---------------------------------------------------------------------------
 
@@ -208,7 +231,7 @@ function assignExpenseTypes(transactions) {
       continue
     }
     if (!tx.isRecurring) {
-      tx.expenseType = EXPENSE_TYPE.EENMALIG
+      tx.expenseType = EXPENSE_TYPE.VARIABEL
       continue
     }
     // Ambiguous category: use cross-year CV (threshold 0.3)
@@ -260,8 +283,6 @@ function buildOneMonth(txs, year, month) {
 
   const vast     = expenses.filter(t => t.expenseType === EXPENSE_TYPE.VAST)
   const variabel = expenses.filter(t => t.expenseType === EXPENSE_TYPE.VARIABEL)
-  const eenmalig = expenses.filter(t => t.expenseType === EXPENSE_TYPE.EENMALIG)
-    .sort((a, b) => b.amount - a.amount)
 
   const regularSavingsOut = savings.filter(t => t.category === CATEGORY.SPAREN && t.direction === 'debit')
   const regularSavingsIn  = savings.filter(t => t.category === CATEGORY.SPAREN && t.direction === 'credit')
@@ -274,7 +295,6 @@ function buildOneMonth(txs, year, month) {
   const totalExpenses         = sumAmounts(expenses)
   const totalVast             = sumAmounts(vast)
   const totalVariabel         = sumAmounts(variabel)
-  const totalOneOff           = sumAmounts(eenmalig)
   const totalSavings          = sumAmounts(regularSavingsOut) - sumAmounts(regularSavingsIn)
   const totalInvestments      = sumAmounts(investments)
   const totalRepayments       = sumAmounts(repayments)
@@ -289,7 +309,6 @@ function buildOneMonth(txs, year, month) {
     totalExpenses,
     totalVast,
     totalVariabel,
-    totalOneOff,
     totalSavings,
     totalInvestments,
     totalRepayments,
@@ -298,7 +317,6 @@ function buildOneMonth(txs, year, month) {
     oneOffIncome,
     vastExpenses:     groupByCategory(vast),
     variabelExpenses: groupByCategory(variabel),
-    oneOffExpenses:   eenmalig,
     savingsTransfers: savings,
   }
 }
@@ -335,14 +353,12 @@ export function analyse(transactions, customCategories = {}) {
     const totalExpenses         = months.reduce((s, m) => s + m.totalExpenses, 0)
     const totalVast             = months.reduce((s, m) => s + m.totalVast, 0)
     const totalVariabel         = months.reduce((s, m) => s + m.totalVariabel, 0)
-    const totalOneOff           = months.reduce((s, m) => s + m.totalOneOff, 0)
     const totalSavings          = months.reduce((s, m) => s + m.totalSavings, 0)
     const totalInvestments      = months.reduce((s, m) => s + m.totalInvestments, 0)
     const totalRepayments       = months.reduce((s, m) => s + m.totalRepayments, 0)
 
     const allVastTxs         = months.flatMap(m => m.vastExpenses.flatMap(b => b.transactions))
     const allVariabelTxs     = months.flatMap(m => m.variabelExpenses.flatMap(b => b.transactions))
-    const allOneOffTxs       = months.flatMap(m => m.oneOffExpenses)
     const allRecurringIncome = months.flatMap(m => m.recurringIncome)
     const allOneOffIncome    = months.flatMap(m => m.oneOffIncome)
     const allSavings         = months.flatMap(m => m.savingsTransfers)
@@ -355,7 +371,6 @@ export function analyse(transactions, customCategories = {}) {
       totalExpenses,
       totalVast,
       totalVariabel,
-      totalOneOff,
       totalSavings,
       totalInvestments,
       totalRepayments,
@@ -363,7 +378,6 @@ export function analyse(transactions, customCategories = {}) {
       months,
       vastExpenses:     groupByCategory(allVastTxs),
       variabelExpenses: groupByCategory(allVariabelTxs),
-      oneOffExpenses:   allOneOffTxs.sort((a, b) => b.amount - a.amount),
       recurringIncome:  allRecurringIncome,
       oneOffIncome:     allOneOffIncome,
       savingsTransfers: allSavings,
