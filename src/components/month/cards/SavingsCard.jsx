@@ -4,9 +4,14 @@ import TransactionRow from './TransactionRow'
 import { fmt } from '../../../utils/fmt'
 import { CATEGORY } from '../../../utils/analyser'
 
-export default function SavingsCard({ monthly }) {
+export default function SavingsCard({ monthly, activeDatasets }) {
   const { savingsTransfers } = monthly
   const [openSections, setOpenSections] = useState(new Set())
+
+  const showSparen     = !activeDatasets || activeDatasets.has('Sparen')
+  const showInvesteren = !activeDatasets || activeDatasets.has('Investeren')
+  const showAflossing  = !activeDatasets || activeDatasets.has('Extra aflossing')
+  if (!showSparen && !showInvesteren && !showAflossing) return null
 
   function toggle(key) {
     setOpenSections(prev => {
@@ -39,7 +44,7 @@ export default function SavingsCard({ monthly }) {
   return (
     <Card title="Sparen & Aflossing" total={fmt(totalOut - totalIn + totalInv + totalRep)} totalClass="savings-out">
 
-      {regularTransfers.length > 0 && (
+      {showSparen && regularTransfers.length > 0 && (
         <div className="category-section">
           <button className="category-toggle" onClick={() => toggle('sparen')}>
             <span className="toggle-arrow">{openSections.has('sparen') ? '▼' : '▶'}</span>
@@ -59,7 +64,7 @@ export default function SavingsCard({ monthly }) {
         </div>
       )}
 
-      {investments.length > 0 && (
+      {showInvesteren && investments.length > 0 && (
         <div className="category-section">
           <button className="category-toggle" onClick={() => toggle('investeren')}>
             <span className="toggle-arrow">{openSections.has('investeren') ? '▼' : '▶'}</span>
@@ -76,7 +81,7 @@ export default function SavingsCard({ monthly }) {
         </div>
       )}
 
-      {repayments.length > 0 && (
+      {showAflossing && repayments.length > 0 && (
         <div className="category-section">
           <button className="category-toggle" onClick={() => toggle('aflossing')}
             style={{ background: '#f5f3ff', borderColor: '#ddd6fe' }}>

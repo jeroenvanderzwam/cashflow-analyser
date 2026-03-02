@@ -3,9 +3,11 @@ import Card from './Card'
 import TransactionRow from './TransactionRow'
 import { fmt } from '../../../utils/fmt'
 
-export default function RecurringExpensesCard({ monthly }) {
+export default function RecurringExpensesCard({ monthly, activeDatasets }) {
   const { vastExpenses, totalVast } = monthly
   const [openCategories, setOpenCategories] = useState(new Set())
+
+  if (activeDatasets && !activeDatasets.has('Vaste lasten')) return null
 
   function toggle(category) {
     setOpenCategories(prev => {

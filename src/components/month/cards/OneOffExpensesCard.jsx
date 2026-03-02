@@ -2,7 +2,8 @@ import Card from './Card'
 import TransactionRow from './TransactionRow'
 import { fmt } from '../../../utils/fmt'
 
-export default function OneOffExpensesCard({ monthly, threshold }) {
+export default function OneOffExpensesCard({ monthly, threshold, activeDatasets }) {
+  if (activeDatasets && !activeDatasets.has('Eenmalige uitgaven')) return null
   const txs   = monthly.oneOffExpenses.filter(t => t.amount < threshold)
   const total = txs.reduce((s, t) => s + t.amount, 0)
 

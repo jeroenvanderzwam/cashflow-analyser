@@ -3,9 +3,13 @@ import Card from './Card'
 import TransactionRow from './TransactionRow'
 import { fmt } from '../../../utils/fmt'
 
-export default function IncomeCard({ monthly }) {
+export default function IncomeCard({ monthly, activeDatasets }) {
   const { recurringIncome, oneOffIncome, totalIncome } = monthly
   const [openSections, setOpenSections] = useState(new Set())
+
+  const showVast     = !activeDatasets || activeDatasets.has('Vast inkomen')
+  const showEenmalig = !activeDatasets || activeDatasets.has('Eenmalig inkomen')
+  if (!showVast && !showEenmalig) return null
 
   function toggle(key) {
     setOpenSections(prev => {
@@ -25,7 +29,7 @@ export default function IncomeCard({ monthly }) {
         <p className="empty-state">Geen inkomsten deze maand</p>
       )}
 
-      {recurringIncome.length > 0 && (
+      {showVast && recurringIncome.length > 0 && (
         <div className="category-section">
           <button className="category-toggle" onClick={() => toggle('vast')}>
             <span className="toggle-arrow">{openSections.has('vast') ? '▼' : '▶'}</span>
@@ -42,7 +46,7 @@ export default function IncomeCard({ monthly }) {
         </div>
       )}
 
-      {oneOffIncome.length > 0 && (
+      {showEenmalig && oneOffIncome.length > 0 && (
         <div className="category-section">
           <button className="category-toggle" onClick={() => toggle('eenmalig')}>
             <span className="toggle-arrow">{openSections.has('eenmalig') ? '▼' : '▶'}</span>

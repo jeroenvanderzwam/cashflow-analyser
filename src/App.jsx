@@ -5,16 +5,17 @@ import Header from './components/Header'
 import Navigation from './components/Navigation'
 import ErrorBanner from './components/ErrorBanner'
 import MultiYearChart from './components/charts/MultiYearChart'
-import YearChart from './components/charts/YearChart'
+import YearChart, { ALL_LABELS } from './components/charts/YearChart'
 import MonthDetail from './components/month/MonthDetail'
 import YearDetail from './components/year/YearDetail'
 
 export default function App() {
-  const [overviews, setOverviews]   = useState([])
-  const [activeYear, setActiveYear] = useState(null)
-  const [activeMonth, setActiveMonth] = useState(null)
-  const [threshold, setThreshold]   = useState(200)
-  const [error, setError]           = useState(null)
+  const [overviews, setOverviews]         = useState([])
+  const [activeYear, setActiveYear]       = useState(null)
+  const [activeMonth, setActiveMonth]     = useState(null)
+  const [threshold, setThreshold]         = useState(200)
+  const [error, setError]                 = useState(null)
+  const [activeDatasets, setActiveDatasets] = useState(new Set(ALL_LABELS))
 
   // Auto-load all years + custom categories from FastAPI on mount
   useEffect(() => {
@@ -27,6 +28,11 @@ export default function App() {
       .then(([categories, csvTexts]) => loadFromTexts(csvTexts, categories))
       .catch(err => setError('Kon data niet laden: ' + err.message))
   }, [])
+
+  // Reset chart toggles whenever a different year is selected
+  useEffect(() => {
+    setActiveDatasets(new Set(ALL_LABELS))
+  }, [activeYear])
 
   // Scroll month detail into view whenever activeMonth changes
   useEffect(() => {
@@ -49,6 +55,25 @@ export default function App() {
     } catch (err) {
       setError(err.message)
     }
+  }
+
+  function toggleDataset(label) {
+    setActiveDatasets(prev => {
+      const next = new Set(prev)
+      if (next.has(label)) next.delete(label)
+      else next.add(label)
+      return next
+    })
+  }
+
+  function toggleGroup(groupLabels) {
+    setActiveDatasets(prev => {
+      const allOn = groupLabels.every(l => prev.has(l))
+      const next = new Set(prev)
+      if (allOn) groupLabels.forEach(l => next.delete(l))
+      else groupLabels.forEach(l => next.add(l))
+      return next
+    })
   }
 
   function handleBack() {
@@ -92,7 +117,14 @@ export default function App() {
         {/* Year chart — stays visible (compact) when viewing month detail */}
         {activeYear && (
           <section id="view-year" className={`view${activeMonth ? ' chart-compact' : ''}`}>
-            <YearChart yearly={activeYear} onMonthClick={setActiveMonth} compact={!!activeMonth} />
+            <YearChart
+              yearly={activeYear}
+              onMonthClick={setActiveMonth}
+              compact={!!activeMonth}
+              active={activeDatasets}
+              onToggleDataset={toggleDataset}
+              onToggleGroup={toggleGroup}
+            />
           </section>
         )}
 
@@ -103,6 +135,7 @@ export default function App() {
               yearly={activeYear}
               threshold={threshold}
               onThresholdChange={setThreshold}
+              activeDatasets={activeDatasets}
             />
           </section>
         )}
@@ -114,6 +147,7 @@ export default function App() {
               monthly={activeMonth}
               threshold={threshold}
               onThresholdChange={setThreshold}
+              activeDatasets={activeDatasets}
             />
           </section>
         )}

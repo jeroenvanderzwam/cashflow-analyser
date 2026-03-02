@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Bar } from 'react-chartjs-2'
 import { fmt } from '../../utils/fmt'
 import { MONTH_NAMES } from '../../utils/analyser'
@@ -26,7 +25,7 @@ const GROUPS = [
   },
 ]
 
-const ALL_LABELS = new Set(GROUPS.flatMap(g => g.datasets.map(d => d.label)))
+export const ALL_LABELS = new Set(GROUPS.flatMap(g => g.datasets.map(d => d.label)))
 
 const ALL_DATASETS = [
   { label: 'Vast inkomen',  backgroundColor: 'rgba(22,163,74,0.85)',   borderColor: 'rgba(22,163,74,1)',   borderWidth: 1, stack: 'income' },
@@ -39,30 +38,9 @@ const ALL_DATASETS = [
   { label: 'Extra aflossing',      backgroundColor: 'rgba(139,92,246,0.8)',   borderColor: 'rgba(139,92,246,1)',  borderWidth: 1 },
 ]
 
-export default function YearChart({ yearly, onMonthClick, compact }) {
+export default function YearChart({ yearly, onMonthClick, compact, active, onToggleDataset, onToggleGroup }) {
   const months = yearly.months
   const labels = months.map(m => MONTH_NAMES[m.month - 1])
-  const [active, setActive] = useState(new Set(ALL_LABELS))
-
-  function toggleDataset(label) {
-    setActive(prev => {
-      const next = new Set(prev)
-      if (next.has(label)) next.delete(label)
-      else next.add(label)
-      return next
-    })
-  }
-
-  function toggleGroup(g) {
-    const groupLabels = g.datasets.map(d => d.label)
-    const allOn = groupLabels.every(l => active.has(l))
-    setActive(prev => {
-      const next = new Set(prev)
-      if (allOn) groupLabels.forEach(l => next.delete(l))
-      else groupLabels.forEach(l => next.add(l))
-      return next
-    })
-  }
 
   const dataMap = Object.fromEntries(
     months.map(m => [m.month, {
@@ -112,7 +90,7 @@ export default function YearChart({ yearly, onMonthClick, compact }) {
               <button
                 className={`chart-group-btn ${state}`}
                 style={{ '--group-color': g.color }}
-                onClick={() => toggleGroup(g)}
+                onClick={() => onToggleGroup(g.datasets.map(d => d.label))}
               >
                 {g.label}
               </button>
@@ -122,7 +100,7 @@ export default function YearChart({ yearly, onMonthClick, compact }) {
                     key={d.label}
                     className={`chart-dataset-pill${active.has(d.label) ? ' active' : ''}`}
                     style={{ '--group-color': g.color }}
-                    onClick={() => toggleDataset(d.label)}
+                    onClick={() => onToggleDataset(d.label)}
                   >
                     {d.short}
                   </button>

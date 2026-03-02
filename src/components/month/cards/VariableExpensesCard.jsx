@@ -3,9 +3,11 @@ import Card from './Card'
 import TransactionRow from './TransactionRow'
 import { fmt } from '../../../utils/fmt'
 
-export default function VariableExpensesCard({ monthly }) {
+export default function VariableExpensesCard({ monthly, activeDatasets }) {
   const { variabelExpenses, totalVariabel } = monthly
   const [openCategories, setOpenCategories] = useState(new Set())
+
+  if (activeDatasets && !activeDatasets.has('Variabele uitgaven')) return null
 
   function toggle(category) {
     setOpenCategories(prev => {
