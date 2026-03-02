@@ -21,17 +21,17 @@
     },
 
     {
-      "pattern": "belastingkantoor|gem.*belast|aanslagbiljet",
+      "pattern": "belastingkantoor|gem.*belast|aanslagbiljet|belastingdienst|\\bcjib\\b|\\bgblt\\b|ccvgem|gemeente.*belast",
       "category": "Gemeentelijke belastingen",
       "type": "vast"
     },
     {
-      "pattern": "via tikkie|via rabo betaalverzoek|via asn bank betaalverzoek|aab inz tikkie",
+      "pattern": "rabo betaalverzoek|asn bank betaalverzoek|\\btikkie\\b|aab.*tikkie",
       "category": "Tikkies"
     },
 
     {
-      "pattern": "albert heijn|ah to go|bck\\*.*ah|lidl|jumbo|plus gils|plus markt|aldi|hoogvliet|bakker bart|dirk van den broek|spar |zwerwers|ekoplaza|biologisch",
+      "pattern": "albert heijn|ah to go|bck\\*.*ah|lidl|jumbo|\\bplus\\b|aldi|hoogvliet|bakker bart|dirk van den broek|spar |zwerwers|ekoplaza|biologisch|dekamarkt|amazing oriental|\\bcoop\\b|vomar|gall.*gall",
       "category": "Boodschappen",
       "type": "variabel"
     },
@@ -56,28 +56,28 @@
       "type": "vast"
     },
     {
-      "pattern": "kosten oranjepakket|ing bank|kpn|t-mobile|vodafone libertel|vodafone|ziggo|netflix|spotify|strato|online\\.nl|xs4all|tele2|sim only",
+      "pattern": "kosten oranjepakket|ing bank|kpn|t-mobile|vodafone libertel|vodafone|ziggo|netflix|spotify|strato|online\\.nl|xs4all|tele2|sim only|odido|abn amro bank|incasso.*creditcard",
       "category": "Bank & Abonnementen",
       "type": "vast"
     },
     {
-      "pattern": "ns groep|ov-chipkaart|translink|shell |bp |total |tamoil|tinq|gulf|esso |brandstof|parkeer|q-park|yellowbrick|msp parking|psa financial|stellantis fin serv",
+      "pattern": "ns groep|ns-|ov-chipkaart|translink|shell |bp |total |tamoil|tinq|gulf|esso |brandstof|parkeer|q.?park|yellowbrick|msp parking|psa financial|stellantis fin serv|aventuslaan|\\btango\\b",
       "category": "Vervoer",
       "type": "vast"
     },
     {
-      "pattern": "n\\.v\\.v\\.|natuurmonumenten|stichting vrijdag|vrijdag|vereniging eigen huis|museumkaart|greenpeace|amnesty|wwf |anwb ",
+      "pattern": "n\\.v\\.v\\.|natuurmonumenten|stichting vrijdag|vrijdag|vereniging eigen huis|museumkaart|greenpeace|amnesty|wwf |anwb |cnv connectief",
       "category": "Lidmaatschappen",
       "type": "vast"
     },
 
     {
-      "pattern": "ccv\\*|zettle\\*|square \\*|restaurant|brasserie|bistro|pannekoek|pizzeria|sushi|kebab|wereldburger|cafetaria|snackbar|takeaway|deliveroo|thuisbezorgd|uber eats|domino|new york pizza|kantine|starbucks|mcdonald|burger.?king|subway\\b|kfc\\b|five guys|koffie|coffee|lunchroom|lunchcafe|bakkerij|patisserie|ijssalon",
+      "pattern": "ccv\\*|zettle\\*|square \\*|restaurant|brasserie|bistro|pannekoek|pizza|sushi|kebab|wereldburger|cafetaria|snackbar|takeaway|deliveroo|thuisbezorgd|uber eats|domino|new york pizza|kantine|starbucks|mcdonald|burger.?king|subway\\b|kfc\\b|five guys|koffie|coffee|lunchroom|lunchcafe|bakkerij|patisserie|ijssalon|lebkov|het pakhuis|negende cirkel|route 66|big easy|pg centraal",
       "category": "Horeca",
       "type": "variabel"
     },
     {
-      "pattern": "efteling|pretpark|dierentuin|\\bzoo\\b|kinepolis|pathe\\b|bioscoop|cinema|theater|theatre|\\bconcert\\b|festival|attractie|evenement",
+      "pattern": "efteling|pretpark|dierentuin|\\bzoo\\b|kinepolis|pathe\\b|bioscoop|cinema|theater|theatre|\\bconcert\\b|festival|attractie|evenement|steampowered|valve corporation|udemy",
       "category": "Vrije tijd",
       "type": "variabel"
     },
@@ -87,27 +87,27 @@
       "type": "variabel"
     },
     {
-      "pattern": "basic.?fit|fitness|sportschool|sportclub|sportver|zwembad|tennisclub|voetbalver|hockeyclub|handbalver|\\bpadel\\b|\\bsquash\\b|\\byoga\\b|pilates",
+      "pattern": "basic.?fit|fitness|sportschool|sportclub|sportver|zwembad|tennisclub|voetbalver|hockeyclub|handbalver|\\bpadel\\b|\\bsquash\\b|\\byoga\\b|pilates|excelsior sportief|eerbeekse boys|groninger studenten voet",
       "category": "Sport & fitness",
       "type": "variabel"
     },
     {
-      "pattern": "bol\\.com|coolblue|amazon|azerty|bax.shop|mediamarkt|wehkamp|zalando",
+      "pattern": "bol\\.com|bolcom bv|coolblue|amazon|azerty|bax.shop|mediamarkt|wehkamp|zalando",
       "category": "Online winkelen",
       "type": "variabel"
     },
     {
-      "pattern": "h&m\\b|\\bzara\\b|c&a\\b|primark|scapino|we fashion|zeeman|jack.jones|\\bmango\\b|vero moda|esprit",
+      "pattern": "h&m\\b|\\bzara\\b|c&a\\b|primark|scapino|we fashion|zeeman|jack.jones|\\bmango\\b|vero moda|esprit|vanharen",
       "category": "Kleding & mode",
       "type": "variabel"
     },
     {
-      "pattern": "\\bikea\\b|hornbach|\\bgamma\\b|\\bkarwei\\b|\\bpraxis\\b|intratuin|leen bakker|kwantum|\\bxenos\\b|\\bblokker\\b",
+      "pattern": "\\bikea\\b|hornbach|\\bgamma\\b|\\bkarwei\\b|\\bpraxis\\b|intratuin|leen bakker|kwantum|\\bxenos\\b|blokker|\\baction\\b|\\bhema\\b",
       "category": "Huis & tuin",
       "type": "variabel"
     },
     {
-      "pattern": "apotheek|drogist|kruidvat|\\betos\\b|kapper|kappers|tandarts|huisarts|fysiother|opticien|brillen|thermen|wellness|\\bsauna\\b",
+      "pattern": "apotheek|drogist|kruidvat|\\betos\\b|kapper|kappers|tandarts|huisarts|fysiother|opticien|brillen|thermen|wellness|\\bsauna\\b|holland.*barrett|\\brkz\\b",
       "category": "Gezondheid & verzorging",
       "type": "variabel"
     }
