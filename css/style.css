@@ -423,6 +423,19 @@ body {
   text-align: right;
 }
 
+/* ---- Section divider within a card (e.g. Bijzonder in OneOffExpensesCard) ---- */
+.section-divider {
+  margin: 0.5rem -0.75rem 0.25rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-expense);
+  background: var(--color-expense-bg);
+  border-top: 1px solid var(--color-border);
+}
+
 /* ---- Threshold badge inside card title ---- */
 .threshold-badge {
   display: inline-block;

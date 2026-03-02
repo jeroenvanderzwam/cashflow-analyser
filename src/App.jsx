@@ -13,7 +13,6 @@ export default function App() {
   const [overviews, setOverviews]         = useState([])
   const [activeYear, setActiveYear]       = useState(null)
   const [activeMonth, setActiveMonth]     = useState(null)
-  const [threshold, setThreshold]         = useState(200)
   const [error, setError]                 = useState(null)
   const [activeDatasets, setActiveDatasets] = useState(new Set(ALL_LABELS))
 
@@ -133,8 +132,6 @@ export default function App() {
           <section id="view-year-detail" className="view">
             <YearDetail
               yearly={activeYear}
-              threshold={threshold}
-              onThresholdChange={setThreshold}
               activeDatasets={activeDatasets}
             />
           </section>
@@ -145,8 +142,6 @@ export default function App() {
           <section id="view-month" className="view">
             <MonthDetail
               monthly={activeMonth}
-              threshold={threshold}
-              onThresholdChange={setThreshold}
               activeDatasets={activeDatasets}
             />
           </section>
