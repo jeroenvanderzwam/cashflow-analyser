@@ -38,7 +38,7 @@ export default function IncomeCard({ monthly, activeDatasets }) {
           </button>
           {openSections.has('vast') && (
             <div className="category-body">
-              {recurringIncome.map(tx => (
+              {recurringIncome.slice().sort((a, b) => b.amount - a.amount).map(tx => (
                 <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="credit" />
               ))}
             </div>
@@ -55,7 +55,7 @@ export default function IncomeCard({ monthly, activeDatasets }) {
           </button>
           {openSections.has('variabel') && (
             <div className="category-body">
-              {oneOffIncome.map(tx => (
+              {oneOffIncome.slice().sort((a, b) => b.amount - a.amount).map(tx => (
                 <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="credit" />
               ))}
             </div>
