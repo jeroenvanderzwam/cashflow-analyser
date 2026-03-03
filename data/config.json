@@ -52,7 +52,12 @@
       "type": "vast"
     },
     {
-      "pattern": "ing hypotheken|hypotheek|vve |huurpenning|woningcorporati",
+      "pattern": "\\bvve\\b|hr j van der zwam",
+      "category": "VvE",
+      "type": "vast"
+    },
+    {
+      "pattern": "ing hypotheken|hypotheek|huurpenning|woningcorporati",
       "category": "Wonen",
       "type": "vast"
     },
