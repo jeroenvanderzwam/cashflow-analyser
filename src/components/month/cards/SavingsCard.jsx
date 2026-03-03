@@ -8,9 +8,9 @@ export default function SavingsCard({ monthly, activeDatasets }) {
   const [openSections, setOpenSections] = useState(new Set())
 
   const showSparen     = !activeDatasets || activeDatasets.has('Sparen')
-  const showInvesteren = !activeDatasets || activeDatasets.has('Investeren')
+  const showBeleggen = !activeDatasets || activeDatasets.has('Beleggen')
   const showAflossing  = !activeDatasets || activeDatasets.has('Extra aflossing')
-  if (!showSparen && !showInvesteren && !showAflossing) return null
+  if (!showSparen && !showBeleggen && !showAflossing) return null
 
   function toggle(key) {
     setOpenSections(prev => {
@@ -22,7 +22,7 @@ export default function SavingsCard({ monthly, activeDatasets }) {
   }
 
   const regularTransfers = savingsTransfers.filter(t => t.category === 'Sparen')
-  const investments      = savingsTransfers.filter(t => t.category === 'Investeren')
+  const investments      = savingsTransfers.filter(t => t.category === 'Beleggen')
   const repayments       = savingsTransfers.filter(t => t.category === 'Extra aflossing')
 
   const regularOut = regularTransfers.filter(t => t.direction === 'debit')
@@ -56,10 +56,10 @@ export default function SavingsCard({ monthly, activeDatasets }) {
           </button>
           {openSections.has('sparen') && (
             <div className="category-body">
-              {regularOut.map(tx => (
+              {regularOut.slice().sort((a, b) => b.amount - a.amount).map(tx => (
                 <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="savings-out" prefix="→" />
               ))}
-              {regularIn.map(tx => (
+              {regularIn.slice().sort((a, b) => b.amount - a.amount).map(tx => (
                 <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="savings-in" prefix="←" />
               ))}
             </div>
@@ -67,19 +67,19 @@ export default function SavingsCard({ monthly, activeDatasets }) {
         </div>
       )}
 
-      {showInvesteren && investments.length > 0 && (
+      {showBeleggen && investments.length > 0 && (
         <div className="category-section">
           <button className="category-toggle" onClick={() => toggle('investeren')}>
             <span className="toggle-arrow">{openSections.has('investeren') ? '▼' : '▶'}</span>
-            <span className="category-name">Investeren</span>
+            <span className="category-name">Beleggen</span>
             <span className="category-total savings-out">{fmt(totalInv)}</span>
           </button>
           {openSections.has('investeren') && (
             <div className="category-body">
-              {investOut.map(tx => (
+              {investOut.slice().sort((a, b) => b.amount - a.amount).map(tx => (
                 <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="savings-out" prefix="→" />
               ))}
-              {investIn.map(tx => (
+              {investIn.slice().sort((a, b) => b.amount - a.amount).map(tx => (
                 <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="savings-in" prefix="←" />
               ))}
             </div>
@@ -97,10 +97,10 @@ export default function SavingsCard({ monthly, activeDatasets }) {
           </button>
           {openSections.has('aflossing') && (
             <div className="category-body">
-              {repOut.map(tx => (
+              {repOut.slice().sort((a, b) => b.amount - a.amount).map(tx => (
                 <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="savings-out" prefix="⬇" />
               ))}
-              {repIn.map(tx => (
+              {repIn.slice().sort((a, b) => b.amount - a.amount).map(tx => (
                 <TransactionRow key={tx.id} name={tx.name} amount={tx.amount} direction="savings-in" prefix="←" />
               ))}
             </div>

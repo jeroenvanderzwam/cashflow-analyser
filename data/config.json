@@ -12,7 +12,7 @@
     },
     {
       "pattern": "flatex bank|beleggingsrek",
-      "category": "Investeren",
+      "category": "Beleggen",
       "type": "savings"
     },
     {

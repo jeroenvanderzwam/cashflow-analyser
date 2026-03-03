@@ -16,7 +16,7 @@ const TX_CLASS = Object.freeze({
 // Default transaction class per category (used for custom merchant mappings)
 const CATEGORY_TX_CLASS = {
   'Sparen':          'savings',
-  'Investeren':      'savings',
+  'Beleggen':      'savings',
   'Extra aflossing': 'savings',
   'Salaris':         'income',
 }
@@ -221,8 +221,8 @@ function buildOneMonth(txs, year, month) {
 
   const regularSavingsOut = savings.filter(t => t.category === 'Sparen' && t.direction === 'debit')
   const regularSavingsIn  = savings.filter(t => t.category === 'Sparen' && t.direction === 'credit')
-  const investOut         = savings.filter(t => t.category === 'Investeren' && t.direction === 'debit')
-  const investIn          = savings.filter(t => t.category === 'Investeren' && t.direction === 'credit')
+  const investOut         = savings.filter(t => t.category === 'Beleggen' && t.direction === 'debit')
+  const investIn          = savings.filter(t => t.category === 'Beleggen' && t.direction === 'credit')
   const repOut            = savings.filter(t => t.category === 'Extra aflossing' && t.direction === 'debit')
   const repIn             = savings.filter(t => t.category === 'Extra aflossing' && t.direction === 'credit')
 
