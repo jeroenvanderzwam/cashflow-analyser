@@ -17,12 +17,21 @@ def list_years():
 
 @app.get('/api/config')
 def get_config():
-    """Return analyser configuration (rules, merchants, categories), or {} if not found."""
-    path = os.path.join(DATA_DIR, 'config.json')
-    if not os.path.isfile(path):
-        return {}
-    with open(path, encoding='utf-8') as f:
-        return json.load(f)
+    """Return merged analyser configuration (general + personal), or {} if neither found."""
+    def load(name):
+        path = os.path.join(DATA_DIR, name)
+        if not os.path.isfile(path):
+            return {}
+        with open(path, encoding='utf-8') as f:
+            return json.load(f)
+
+    general  = load('config.general.json')
+    personal = load('config.personal.json')
+
+    return {
+        'merchants': {**general.get('merchants', {}), **personal.get('merchants', {})},
+        'rules':     personal.get('rules', []) + general.get('rules', []),
+    }
 
 
 @app.get('/api/data/{year}')

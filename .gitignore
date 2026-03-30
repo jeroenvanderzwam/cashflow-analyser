@@ -1,6 +1,6 @@
 # Personal financial data — never commit
 data/*.csv
-data/config.json
+data/config.personal.json
 
 # OS / editor
 .DS_Store
